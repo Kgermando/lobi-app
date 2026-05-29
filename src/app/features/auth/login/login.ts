@@ -33,7 +33,15 @@ export class LoginComponent {
 
     const { email, password } = this.form.value;
     this.auth.login(email!, password!).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        if (!this.auth.canAccessApp()) {
+          this.router.navigate(['/onboarding']);
+        } else if (this.auth.isAdmin()) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
+      },
       error: err => {
         this.errorMsg.set(err.error?.message || 'Email ou mot de passe incorrect.');
         this.loading.set(false);

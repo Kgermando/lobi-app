@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, adminGuard, guestGuard } from './core/guards/auth.guard';
+import { authGuard, adminGuard, guestGuard, onboardingGuard } from './core/guards/auth.guard';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout';
@@ -31,11 +31,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/onboarding/onboarding').then(m => m.OnboardingComponent)
   },
 
-  // ── Main App (authenticated) ────────────────────────────────────────────
+  // ── Main App (authenticated + KYC submitted) ───────────────────────────
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [onboardingGuard],
     children: [
       { path: 'dashboard',  loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent) },
       { path: 'wallet',     loadComponent: () => import('./features/wallet/wallet').then(m => m.WalletComponent) },

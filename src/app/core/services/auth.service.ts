@@ -1,7 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap, catchError, throwError, of } from 'rxjs';
+import { tap, catchError, throwError, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { User, AuthResponse, RegisterStep1, RegisterStep2 } from '../models/user.model';
 
@@ -12,11 +12,19 @@ export class AuthService {
   private readonly STEP_KEY  = 'lobi_onboarding_step';
   private readonly UUID_KEY  = 'lobi_user_uuid';
 
-  currentUser = signal<User | null>(this.loadUser());
-  isLoggedIn  = computed(() => !!this.currentUser());
-  isAdmin     = computed(() => ['admin', 'superadmin'].includes(this.currentUser()?.role ?? ''));
+  currentUser          = signal<User | null>(this.loadUser());
+  onboardingStep       = signal<number>(parseInt(localStorage.getItem('lobi_onboarding_step') ?? '0', 10));
+  isLoggedIn           = computed(() => !!this.currentUser());
+  isOnboardingComplete = computed(() => this.onboardingStep() >= 5);
+  canAccessApp         = computed(() => this.onboardingStep() >= 3);
+  isAdmin              = computed(() => ['admin', 'superadmin'].includes(this.currentUser()?.role ?? ''));
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  saveOnboardingStep(step: number) {
+    localStorage.setItem(this.STEP_KEY, String(step));
+    this.onboardingStep.set(step);
+  }
 
   /* ── Registration steps ───────────────────────────── */
   registerStep1(data: RegisterStep1) {
@@ -24,20 +32,20 @@ export class AuthService {
       tap(res => {
         localStorage.setItem(this.TOKEN_KEY, res.token);
         localStorage.setItem(this.UUID_KEY,  res.user_uuid);
-        localStorage.setItem(this.STEP_KEY,  String(res.onboarding_step));
+        this.saveOnboardingStep(res.onboarding_step ?? 1);
       })
     );
   }
 
   registerStep2(data: RegisterStep2) {
     return this.http.post<any>(`${environment.apiUrl}/auth/register/step2`, data).pipe(
-      tap(res => localStorage.setItem(this.STEP_KEY, String(res.onboarding_step)))
+      tap(res => this.saveOnboardingStep(res.onboarding_step ?? 2))
     );
   }
 
   registerStep5(userUUID: string, riskProfile: string) {
     return this.http.post<any>(`${environment.apiUrl}/auth/register/step5`, { user_uuid: userUUID, risk_profile: riskProfile }).pipe(
-      tap(res => localStorage.setItem(this.STEP_KEY, String(res.onboarding_step)))
+      tap(res => this.saveOnboardingStep(res.onboarding_step ?? 5))
     );
   }
 
@@ -47,9 +55,9 @@ export class AuthService {
       tap(res => {
         localStorage.setItem(this.TOKEN_KEY, res.token);
         localStorage.setItem(this.UUID_KEY,  res.user_uuid);
-        localStorage.setItem(this.STEP_KEY,  String(res.onboarding_step));
-        this.fetchMe().subscribe();
+        this.saveOnboardingStep(res.onboarding_step ?? 0);
       }),
+      switchMap(() => this.fetchMe()),
       catchError(err => throwError(() => err))
     );
   }
@@ -59,6 +67,9 @@ export class AuthService {
       tap(res => {
         this.currentUser.set(res.data);
         localStorage.setItem(this.USER_KEY, JSON.stringify(res.data));
+        if (res.data.onboarding_step !== undefined) {
+          this.saveOnboardingStep(res.data.onboarding_step);
+        }
       })
     );
   }
@@ -69,6 +80,7 @@ export class AuthService {
     localStorage.removeItem(this.STEP_KEY);
     localStorage.removeItem(this.UUID_KEY);
     this.currentUser.set(null);
+    this.onboardingStep.set(0);
     this.router.navigate(['/auth/login']);
   }
 
@@ -82,6 +94,7 @@ export class AuthService {
         localStorage.removeItem(this.STEP_KEY);
         localStorage.removeItem(this.UUID_KEY);
         this.currentUser.set(null);
+        this.onboardingStep.set(0);
         return of(null);
       })
     );
@@ -97,7 +110,7 @@ export class AuthService {
   }
 
   getOnboardingStep(): number {
-    return parseInt(localStorage.getItem(this.STEP_KEY) ?? '0', 10);
+    return this.onboardingStep();
   }
 
   private loadUser(): User | null {

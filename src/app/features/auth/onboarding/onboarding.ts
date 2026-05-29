@@ -76,10 +76,10 @@ export class OnboardingComponent {
   // ──────────────────────────────────────────────────────────────────────────
 
   ngOnInit() {
-    // If user is already partially onboarded, jump to their step
+    // savedStep is the last completed API step; advance to the next UI step
     const savedStep = this.auth.getOnboardingStep();
-    if (savedStep && savedStep > 1) {
-      this.step.set(Math.min(savedStep, this.totalSteps));
+    if (savedStep > 0 && savedStep < 5) {
+      this.step.set(Math.min(savedStep + 1, this.totalSteps));
     }
   }
 
@@ -156,8 +156,8 @@ export class OnboardingComponent {
     const token = this.auth.getToken();
     const headers: any = token ? { Authorization: `Bearer ${token}` } : {};
 
-    this.http.post(`${this.getApiUrl()}/kyc/submit`, fd, { headers }).subscribe({
-      next: () => { this.loading.set(false); this.step.set(4); },
+    this.http.post<{ onboarding_step: number }>(`${this.getApiUrl()}/kyc/submit`, fd, { headers }).subscribe({
+      next: (res) => { this.auth.saveOnboardingStep(res.onboarding_step ?? 3); this.loading.set(false); this.step.set(4); },
       error: err => {
         this.errorMsg.set(err.error?.message || 'Erreur lors du téléchargement des documents.');
         this.loading.set(false);
