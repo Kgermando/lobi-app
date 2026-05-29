@@ -7,7 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
   <!-- App loading splash — removed once Angular bootstraps -->
@@ -15,8 +16,7 @@
     <div class="splash-ring">
       <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="60" cy="60" r="54" stroke="#E8EDF5" stroke-width="6"/>
-        <circle cx="60" cy="60" r="54" stroke="url(#splash-grad)" stroke-width="6"
-                stroke-linecap="round" stroke-dasharray="200 140"/>
+        <circle cx="60" cy="60" r="54" stroke="url(#splash-grad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="200 140"/>
         <defs>
           <linearGradient id="splash-grad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stop-color="#1A4D8F"/>
@@ -107,5 +107,6 @@
       observer.observe(document.querySelector('app-root'), { childList: true, subtree: true });
     });
   </script>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 </html>

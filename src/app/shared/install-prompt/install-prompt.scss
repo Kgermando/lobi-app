@@ -1,0 +1,203 @@
+/* ── Install Prompt Dialog ─────────────────────────────── */
+
+.ip-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 32, 53, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  animation: ip-fade-in .2s ease;
+}
+
+.ip-dialog {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(400px, calc(100vw - 32px));
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 28px 24px 24px;
+  z-index: 1101;
+  text-align: center;
+  animation: ip-slide-up .3s cubic-bezier(.34,1.56,.64,1);
+
+  @media (min-width: 768px) {
+    bottom: 32px;
+  }
+}
+
+/* Close button */
+.ip-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: var(--border-light);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:hover {
+    background: var(--border);
+    color: var(--text);
+  }
+}
+
+/* App icon */
+.ip-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 24px rgba(26,77,143,.25);
+  overflow: hidden;
+
+  img { border-radius: var(--radius); }
+}
+
+/* Text */
+.ip-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+
+.ip-subtitle {
+  font-size: .875rem;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+/* Platform icons */
+.ip-platforms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ip-platform {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: .75rem;
+  font-weight: 500;
+
+  svg { color: var(--primary); }
+}
+
+.ip-platform-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--border);
+}
+
+/* iOS steps */
+.ip-ios-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ip-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .875rem;
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.ip-step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  flex-shrink: 0;
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Buttons */
+.ip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.ip-btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(26,77,143,.3);
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(26,77,143,.45);
+    transform: translateY(-1px);
+  }
+  &:active { transform: translateY(0); }
+}
+
+.ip-btn-secondary {
+  background: var(--bg);
+  color: var(--primary);
+  border: 1.5px solid var(--border);
+
+  &:hover { background: var(--border-light); }
+}
+
+/* Browser manual hint */
+.ip-hint {
+  font-size: .82rem;
+  color: var(--text-muted);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  strong { color: var(--text); }
+}
+
+/* Animations */
+@keyframes ip-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ip-slide-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(24px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

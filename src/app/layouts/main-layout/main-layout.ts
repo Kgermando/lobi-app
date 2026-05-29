@@ -3,11 +3,12 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../shared/navbar/navbar';
 import { SidebarComponent } from '../../shared/sidebar/sidebar';
 import { CommonModule } from '@angular/common';
+import { InstallPromptComponent } from '../../shared/install-prompt/install-prompt';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, SidebarComponent, CommonModule],
+  imports: [RouterOutlet, NavbarComponent, SidebarComponent, CommonModule, InstallPromptComponent],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
