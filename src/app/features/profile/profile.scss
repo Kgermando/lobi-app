@@ -1,0 +1,147 @@
+.profile-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+/* Photo card */
+.profile-photo-card {
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.photo-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar {
+  width: 96px !important;
+  height: 96px !important;
+  font-size: 2rem !important;
+}
+
+.photo-change-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 30px;
+  height: 30px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: .875rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: var(--transition);
+  &:hover { background: var(--secondary); }
+  &.uploading { background: var(--secondary); cursor: wait; }
+}
+
+.hidden-input { display: none; }
+
+.photo-info { width: 100%; }
+.mt-1 { margin-top: .25rem; }
+
+/* KYC status box */
+.kyc-status-box {
+  width: 100%;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: .875rem;
+  border: 1px solid var(--border-light);
+  text-align: left;
+}
+.kyc-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .375rem;
+}
+.mt-2 { margin-top: .5rem; }
+
+/* Risk profile box */
+.risk-profile-box {
+  width: 100%;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: .875rem;
+  border: 1px solid var(--border-light);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.risk-badge {
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Profile main */
+.profile-main { display: flex; flex-direction: column; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Info rows */
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 0;
+  border-bottom: 1px solid var(--border-light);
+  &:last-child { border-bottom: none; }
+  flex-wrap: wrap;
+  gap: .375rem;
+}
+
+.info-label { font-size: .875rem; color: var(--text-muted); font-weight: 500; }
+.info-value { font-size: .875rem; font-weight: 600; color: var(--text); }
+
+.mt-4 { margin-top: 1rem; }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .65s linear infinite;
+}
+
+.spinner-sm {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .65s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

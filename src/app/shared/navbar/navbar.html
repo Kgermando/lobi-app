@@ -1,0 +1,141 @@
+﻿<header class="navbar">
+  <div class="navbar-inner">
+    <!-- Logo & hamburger -->
+    <div class="navbar-left">
+      <button *ngIf="showHamburger" class="btn-icon hamburger" (click)="toggleMenu()" aria-label="Menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <a routerLink="/dashboard" class="navbar-brand">
+        <img src="/images/logo.png" alt="Lobi" class="brand-logo"/>
+        <span class="brand-name">LOBI</span>
+      </a>
+    </div>
+
+    <!-- Right actions -->
+    <div class="navbar-right">
+
+      <!-- Notifications -->
+      @if (auth.isLoggedIn()) {
+        <div class="navbar-dropdown">
+          <button class="btn-icon notif-btn" (click)="toggleNotif()" aria-label="Notifications">
+            <mat-icon>notifications</mat-icon>
+            @if (notif.unreadCount() > 0) {
+              <span class="badge-dot">{{ notif.unreadCount() }}</span>
+            }
+          </button>
+
+          @if (notifOpen()) {
+            <div class="dropdown-panel notif-panel fade-in">
+              <div class="dropdown-header">
+                <span class="font-semibold">Notifications</span>
+                <button class="btn btn-ghost btn-sm" (click)="markAllRead()">Tout lire</button>
+              </div>
+              <div class="notif-list">
+                @for (n of notifications(); track n.id) {
+                  <div class="notif-item" [class.unread]="!n.is_read">
+                    <span class="notif-icon" [class]="'notif-icon-' + n.type">
+                      @switch (n.type) {
+                        @case ('success') { <mat-icon>check_circle</mat-icon> }
+                        @case ('warning') { <mat-icon>warning</mat-icon> }
+                        @case ('error')   { <mat-icon>error</mat-icon> }
+                        @default          { <mat-icon>info</mat-icon> }
+                      }
+                    </span>
+                    <div class="notif-body">
+                      <p class="notif-title">{{ n.title }}</p>
+                      <p class="notif-msg">{{ n.message }}</p>
+                      <span class="notif-time text-xs text-muted">{{ n.created_at | date:'short' }}</span>
+                    </div>
+                  </div>
+                }
+                @if (notifications().length === 0) {
+                  <div class="notif-empty">
+                    <p>Aucune notification</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Profile -->
+      @if (auth.isLoggedIn()) {
+        <div class="navbar-dropdown">
+          <button class="navbar-profile-btn" (click)="toggleProfile()">
+            <div class="nav-user-text">
+              <span class="nav-user-name">{{ navDisplayName }}</span>
+              <span class="nav-user-role">{{ user?.role }}</span>
+            </div>
+            <div class="avatar avatar-sm nav-avatar">
+              @if (user?.profile_photo) {
+                <img [src]="user?.profile_photo" [alt]="user?.fullname"/>
+              } @else {
+                <span>{{ initials }}</span>
+              }
+            </div>
+          </button>
+
+          @if (profileOpen()) {
+            <div class="dropdown-panel profile-panel fade-in">
+
+              <!-- Header gradient -->
+              <div class="pdrop-head">
+                <div class="avatar avatar-md">
+                  @if (user?.profile_photo) {
+                    <img [src]="user?.profile_photo" [alt]="user?.fullname"/>
+                  } @else {
+                    <span>{{ initials }}</span>
+                  }
+                </div>
+                <div class="pdrop-head-text">
+                  <p class="pdrop-name">{{ user?.fullname || user?.email }}</p>
+                  @if (user?.fullname) {
+                    <p class="pdrop-email">{{ user?.email }}</p>
+                  }
+                  <span class="pdrop-role">{{ user?.role }}</span>
+                </div>
+              </div>
+
+              <!-- Links -->
+              <div class="pdrop-nav">
+                <a class="pdrop-item" routerLink="/dashboard" (click)="toggleProfile()">
+                  <span class="pdrop-icon"><mat-icon>dashboard</mat-icon></span>
+                  Mon dashboard
+                </a>
+                <a class="pdrop-item" routerLink="/profile" (click)="toggleProfile()">
+                  <span class="pdrop-icon"><mat-icon>person</mat-icon></span>
+                  Mon profil
+                </a>
+                <a class="pdrop-item" routerLink="/wallet" (click)="toggleProfile()">
+                  <span class="pdrop-icon"><mat-icon>account_balance_wallet</mat-icon></span>
+                  Mon wallet
+                </a>
+                @if (auth.isAdmin()) {
+                  <a class="pdrop-item" routerLink="/admin" (click)="toggleProfile()">
+                    <span class="pdrop-icon"><mat-icon>admin_panel_settings</mat-icon></span>
+                    Administration
+                  </a>
+                }
+              </div>
+
+              <!-- Logout -->
+              <div class="pdrop-footer">
+                <button class="pdrop-logout" (click)="logout()">
+                  <mat-icon>logout</mat-icon>
+                  Déconnexion
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Guest buttons -->
+      @if (!auth.isLoggedIn()) {
+        <a routerLink="/auth/login" class="btn btn-ghost btn-sm">Connexion</a>
+        <a routerLink="/auth/register" class="btn btn-primary btn-sm">Commencer</a>
+      }
+    </div>
+  </div>
+</header>

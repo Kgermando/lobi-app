@@ -1,0 +1,155 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mon Profil</h1>
+      <p class="page-subtitle text-muted">Gérez vos informations personnelles et votre identité</p>
+    </div>
+  </div>
+
+  <div class="profile-layout">
+
+    <!-- Left: photo + KYC status -->
+    <aside class="profile-aside">
+      <div class="card profile-photo-card">
+        <!-- Photo -->
+        <div class="photo-wrap">
+          <div class="avatar avatar-xl profile-avatar">
+            @if (user?.profile_photo) { <img [src]="user?.profile_photo" [alt]="user?.fullname"/> }
+            @if (!user?.profile_photo) { <span>{{ initials }}</span> }
+          </div>
+          <label class="photo-change-btn" for="photo-input" [class.uploading]="uploadingPhoto()">
+            @if (!uploadingPhoto()) { <mat-icon>photo_camera</mat-icon> }
+            @if (uploadingPhoto()) { <span class="spinner-sm"></span> }
+          </label>
+          <input id="photo-input" type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhotoChange($event)" class="hidden-input"/>
+        </div>
+
+        <div class="photo-info">
+          <h3 class="font-display text-lg font-bold">{{ user?.fullname || '—' }}</h3>
+          <p class="text-sm text-muted">{{ user?.email }}</p>
+          <span class="badge badge-primary text-xs mt-1">{{ user?.role }}</span>
+        </div>
+
+        <!-- KYC status -->
+        <div class="kyc-status-box">
+          <div class="kyc-status-header">
+            <span class="font-semibold text-sm">Vérification d'identité</span>
+            <span class="badge" [ngClass]="kycStatusClass">{{ kycStatusLabel }}</span>
+          </div>
+          @if (user?.kyc?.status === 'pending') {
+          <p class="text-xs text-muted mt-1">Documents en cours de vérification (24-48h)</p>
+          }
+          @if (user?.kyc?.status === 'rejected') {
+          <p class="text-xs text-muted mt-1">Motif : {{ user?.kyc?.admin_note }}</p>
+          }
+          @if (!user?.kyc || user?.kyc?.status === 'rejected') {
+          <a routerLink="/onboarding" class="btn btn-sm btn-outline btn-full mt-2">
+            {{ user?.kyc?.status === 'rejected' ? 'Soumettre à nouveau' : 'Vérifier maintenant' }}
+          </a>
+          }
+        </div>
+
+        <!-- Risk profile -->
+        <div class="risk-profile-box">
+          <span class="font-semibold text-sm">Profil investisseur</span>
+          <div class="risk-badge">
+            @switch (user?.risk_profile) {
+              @case ('secure')         { <span><mat-icon>security</mat-icon> Prudent</span> }
+              @case ('balanced')       { <span><mat-icon>balance</mat-icon> Équilibré</span> }
+              @case ('growth')          { <span><mat-icon>rocket_launch</mat-icon> Croissance</span> }
+              @default                 { <span>—</span> }
+            }
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right: edit form -->
+    <div class="profile-main">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Informations personnelles</h3>
+        </div>
+        <div class="card-body">
+          @if (successMsg()) { <div class="alert alert-success"><mat-icon>check_circle</mat-icon> {{ successMsg() }}</div> }
+          @if (errorMsg()) { <div class="alert alert-error">{{ errorMsg() }}</div> }
+
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Nom complet</label>
+                <input type="text" formControlName="fullname" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Téléphone</label>
+                <input type="tel" formControlName="telephone" class="form-control" placeholder="+243 8X XXX XXXX"/>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Ville</label>
+                <input type="text" formControlName="ville" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pays</label>
+                <input type="text" formControlName="pays" class="form-control"/>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Date de naissance</label>
+                <input type="date" formControlName="date_naissance" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tranche d'âge</label>
+                <select formControlName="tranche_age" class="form-select">
+                  @for (t of trancheAges; track t) {
+                  <option [value]="t">{{ t }} ans</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" [disabled]="loading()">
+                @if (!loading()) { <span>Sauvegarder les modifications</span> }
+                @if (loading()) { <span class="spinner"></span> }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Account info (read-only) -->
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3 class="card-title">Informations du compte</h3>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ user?.email }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">UUID</span>
+            <code class="info-value text-xs">{{ user?.uuid }}</code>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Étape d'onboarding</span>
+            <span class="info-value">{{ user?.onboarding_step }} / 5</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Statut</span>
+            <span class="badge" [class]="user?.status ? 'badge-green' : 'badge-secondary'">
+              {{ user?.status ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

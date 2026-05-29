@@ -1,0 +1,14 @@
+<app-navbar (menuToggled)="toggleSidebar()"></app-navbar>
+
+<div class="app-shell">
+  <!-- Sidebar overlay on mobile -->
+  <div class="sidebar-overlay" [class.visible]="sidebarOpen()" (click)="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <app-sidebar [open]="sidebarOpen()"></app-sidebar>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,37 @@
+.kyc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.kyc-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.kyc-docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.kyc-doc-img {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  max-height: 200px;
+  border: 1px solid var(--border-light);
+}
+
+.filter-row {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.modal-lg {
+  max-width: 760px;
+}

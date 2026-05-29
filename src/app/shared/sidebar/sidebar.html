@@ -1,0 +1,50 @@
+﻿<aside class="sidebar" [class.open]="open">
+
+  <!-- Branding -->
+  <div class="sidebar-brand">
+    <img src="/images/logo.png" alt="Lobi" class="sidebar-logo"/>
+    <div>
+      <span class="sidebar-app-name">LOBI</span>
+      <span class="sidebar-tagline">Assurons l'avenir</span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    @if (auth.isAdmin()) {
+      <p class="nav-section-label">Administration</p>
+    } @else {
+      <p class="nav-section-label">Navigation</p>
+    }
+
+    @for (item of navItems; track item.route) {
+      <a [routerLink]="item.route"
+         class="nav-item"
+         [class.active]="isActive(item.route)">
+        <span class="nav-icon"><mat-icon>{{ item.icon }}</mat-icon></span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <!-- Spacer -->
+  <div class="sidebar-spacer"></div>
+
+  <!-- Bottom actions -->
+  <div class="sidebar-footer">
+    <div class="sidebar-version">
+      @if (auth.isAdmin()) {
+        <a routerLink="/dashboard" class="nav-item">
+          <span class="nav-icon"><mat-icon>home</mat-icon></span>
+          <span class="nav-label">Vue Utilisateur</span>
+        </a>
+      }
+      @if (!auth.isAdmin() && user?.role === 'admin') {
+        <a routerLink="/admin" class="nav-item">
+          <span class="nav-icon"><mat-icon>admin_panel_settings</mat-icon></span>
+          <span class="nav-label">Administration</span>
+        </a>
+      }
+    </div>
+  </div>
+</aside>

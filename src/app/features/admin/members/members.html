@@ -1,0 +1,94 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Adhérents</h1>
+      <p class="page-subtitle text-muted">{{ total() }} utilisateurs inscrits sur la plateforme</p>
+    </div>
+    <div class="page-header-actions">
+      <input type="search" class="form-control" style="width:280px" placeholder="Rechercher par nom ou email..."
+             (input)="onSearch($event)"/>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  @if (loading()) {
+  <div class="skeleton-block" style="height:300px"></div>
+  }
+
+  <!-- Table -->
+  @if (!loading()) {
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="lobi-table">
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Téléphone</th>
+            <th>Ville</th>
+            <th>Rôle</th>
+            <th>Onboarding</th>
+            <th>Inscrit le</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users(); track u.uuid) {
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:.5rem">
+                <div class="avatar avatar-sm">
+                  @if (u.profile_photo) {
+                  <img [src]="u.profile_photo" [alt]="u.fullname"/>
+                  }
+                  @if (!u.profile_photo) {
+                  <span>{{ (u.fullname || u.email || '?')[0].toUpperCase() }}</span>
+                  }
+                </div>
+                <div>
+                  <p class="font-medium text-sm">{{ u.fullname || '—' }}</p>
+                  <p class="text-xs text-muted">{{ u.email }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="text-sm">{{ u.telephone || '—' }}</td>
+            <td class="text-sm">{{ u.ville || '—' }}</td>
+            <td><span class="badge" [ngClass]="roleClass(u.role)">{{ u.role }}</span></td>
+            <td class="text-sm text-center">{{ u.onboarding_step }} / 5</td>
+            <td class="text-xs text-muted">{{ u.created_at | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="badge" [class]="u.status ? 'badge-green' : 'badge-coral'">{{ u.status ? 'Actif' : 'Suspendu' }}</span>
+            </td>
+            <td>
+              <button class="btn btn-ghost btn-sm" (click)="toggleStatus(u.uuid)" title="Basculer statut">
+                <mat-icon>{{ u.status ? 'block' : 'check_circle' }}</mat-icon>
+              </button>
+            </td>
+          </tr>
+          }
+          @if (!users().length) {
+          <tr>
+            <td colspan="8" class="text-center text-muted py-4">Aucun utilisateur trouvé</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+    <div class="pagination">
+      <button class="btn btn-ghost btn-sm" [disabled]="page() === 1" (click)="prevPage()">
+        <mat-icon>chevron_left</mat-icon> Précédent
+      </button>
+      <span class="text-sm text-muted">Page {{ page() }} / {{ totalPages }}</span>
+      <button class="btn btn-ghost btn-sm" [disabled]="page() === totalPages" (click)="nextPage()">
+        Suivant <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+  }
+
+</div>

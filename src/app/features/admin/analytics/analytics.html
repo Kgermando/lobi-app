@@ -1,0 +1,84 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Analytics</h1>
+      <p class="page-subtitle text-muted">Statistiques globales de la plateforme Lobi</p>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  @if (loading()) {
+  <div class="stats-grid">
+    @for (i of [1,2,3,4,5,6]; track i) {
+    <div class="skeleton-card">
+      <div class="skeleton mb-2" style="height:14px;width:50%"></div>
+      <div class="skeleton" style="height:30px;width:70%"></div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Stats -->
+  @if (!loading() && data()) {
+  <div class="stats-grid">
+
+    <div class="stat-card stat-card-primary">
+      <div class="stat-icon"><mat-icon>people</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Utilisateurs totaux</p>
+        <p class="stat-value">{{ data()?.total_users ?? 0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-gold">
+      <div class="stat-icon"><mat-icon>pending_actions</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">KYC en attente</p>
+        <p class="stat-value">{{ data()?.pending_kyc ?? 0 }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-green">
+      <div class="stat-icon"><mat-icon>arrow_downward</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Total dépôts</p>
+        <p class="stat-value">{{ formatAmount(data()?.total_deposits ?? 0) }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-secondary">
+      <div class="stat-icon"><mat-icon>arrow_upward</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Total retraits</p>
+        <p class="stat-value">{{ formatAmount(data()?.total_withdrawals ?? 0) }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card" style="--card-color:var(--coral)">
+      <div class="stat-icon"><mat-icon>show_chart</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Total investissements</p>
+        <p class="stat-value">{{ formatAmount(data()?.total_investments ?? 0) }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-primary">
+      <div class="stat-icon"><mat-icon>auto_graph</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Intérêts distribués</p>
+        <p class="stat-value">{{ formatAmount(data()?.total_interest ?? 0) }}</p>
+      </div>
+    </div>
+
+  </div>
+  }
+
+  @if (!loading() && !data()) {
+  <div class="empty-state">
+    <mat-icon>analytics</mat-icon>
+    <p>Aucune donnée disponible</p>
+  </div>
+  }
+
+</div>

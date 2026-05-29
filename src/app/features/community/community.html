@@ -1,0 +1,165 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Communauté Lobi</h1>
+      <p class="page-subtitle text-muted">Webinaires, ressources et réseau de jeunes entrepreneurs congolais</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn" [class.active]="activeTab() === 'webinars'"   (click)="activeTab.set('webinars')">
+      <mat-icon>videocam</mat-icon> Webinaires &amp; Événements
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'resources'"  (click)="activeTab.set('resources')">
+      <mat-icon>library_books</mat-icon> Ressources
+    </button>
+  </div>
+
+  <!-- Webinars -->
+  @if (activeTab() === 'webinars') {
+  <div>
+
+    <!-- Skeleton -->
+    @if (loading()) {
+    <div class="webinar-grid">
+      @for (i of [1,2,3,4]; track i) {
+      <div class="skeleton-card">
+        <div class="skeleton mb-2" style="height:180px"></div>
+        <div class="skeleton mb-1" style="height:18px;width:70%"></div>
+        <div class="skeleton" style="height:14px;width:50%"></div>
+      </div>
+      }
+    </div>
+    }
+
+    @if (!loading()) {
+    <div>
+
+      <!-- Live webinar banner -->
+      @for (w of webinars(); track w.id) {
+        @if (isLive(w)) {
+        <div class="live-banner">
+          <div class="live-dot"></div>
+          <div>
+            <p class="font-bold"><mat-icon style="font-size:16px;vertical-align:middle">fiber_manual_record</mat-icon> EN DIRECT : {{ w.title }}</p>
+            <p class="text-sm">Avec {{ w.speaker }}</p>
+          </div>
+          <a [href]="w.register_url" target="_blank" class="btn btn-gold btn-sm ml-auto">Rejoindre →</a>
+        </div>
+        }
+      }
+
+      <!-- Upcoming -->
+      @if (webinars().length) {
+      <h3 class="section-title">À venir &amp; passés</h3>
+      }
+      <div class="webinar-grid">
+        @for (w of webinars(); track w.id) {
+        <div class="webinar-card card">
+          <div class="webinar-img">
+            @if (w.image_url) { <img [src]="w.image_url" [alt]="w.title"/> }
+            @if (!w.image_url) { <div class="webinar-img-placeholder"><mat-icon>mic</mat-icon></div> }
+            @if (isLive(w)) { <span class="webinar-live-badge"><mat-icon>fiber_manual_record</mat-icon> LIVE</span> }
+            @if (isPast(w)) { <span class="webinar-past-badge">Passé</span> }
+          </div>
+
+          <div class="webinar-body">
+            @if (w.tags) {
+            <div class="webinar-tags">
+              @for (tag of w.tags.split(','); track tag) {
+              <span class="badge badge-secondary badge-sm">{{ tag.trim() }}</span>
+              }
+            </div>
+            }
+            <h4 class="webinar-title">{{ w.title }}</h4>
+            <p class="webinar-speaker text-sm text-muted"><mat-icon style="font-size:14px;vertical-align:middle">person</mat-icon> {{ w.speaker }}</p>
+            <p class="webinar-date text-xs text-muted"><mat-icon style="font-size:14px;vertical-align:middle">event</mat-icon> {{ formatDate(w.scheduled_at) }}</p>
+            @if (w.duration) {
+            <p class="webinar-duration text-xs text-muted"><mat-icon style="font-size:14px;vertical-align:middle">timer</mat-icon> {{ w.duration }} minutes</p>
+            }
+          </div>
+
+          <div class="webinar-footer">
+            @if (isPending(w) && w.register_url) {
+            <a [href]="w.register_url" target="_blank" class="btn btn-primary btn-sm btn-full">S'inscrire</a>
+            }
+            @if (isLive(w) && w.register_url) {
+            <a [href]="w.register_url" target="_blank" class="btn btn-gold btn-sm btn-full">Rejoindre en live</a>
+            }
+            @if (isPast(w) && w.video_url) {
+            <a [href]="w.video_url" target="_blank" class="btn btn-outline btn-sm btn-full">▶ Voir le replay</a>
+            }
+            @if (isPast(w) && !w.video_url) {
+            <span class="text-xs text-muted text-center">Replay bientôt disponible</span>
+            }
+          </div>
+        </div>
+        }
+      </div>
+
+      @if (!webinars().length) {
+      <div class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <p>Aucun webinaire disponible pour le moment</p>
+        <p class="text-sm text-muted">Revenez bientôt !</p>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Resources -->
+  @if (activeTab() === 'resources') {
+  <div>
+
+    <!-- Category filter -->
+    <div class="category-filter">
+      @for (cat of categories; track cat) {
+      <button class="filter-pill"
+              [class.active]="resCategory() === cat"
+              (click)="filterResources(cat)">
+        {{ catLabels[cat] }}
+      </button>
+      }
+    </div>
+
+    <div class="resources-grid">
+      @for (r of resources(); track r.id) {
+      <a [href]="r.content_url" target="_blank" class="resource-card card">
+        <div class="resource-img">
+          @if (r.image_url) { <img [src]="r.image_url" [alt]="r.title"/> }
+          @if (!r.image_url) {
+          <div class="resource-img-placeholder">
+            @switch (r.category) {
+              @case ('finance')     { <mat-icon>payments</mat-icon> }
+              @case ('investment')  { <mat-icon>show_chart</mat-icon> }
+              @case ('technology')  { <mat-icon>computer</mat-icon> }
+              @default              { <mat-icon>article</mat-icon> }
+            }
+          </div>
+          }
+        </div>
+        <div class="resource-body">
+          <span class="badge badge-secondary badge-sm mb-1">{{ catLabels[r.category] ?? r.category }}</span>
+          <h4 class="resource-title">{{ r.title }}</h4>
+          @if (r.read_time) {
+          <p class="text-xs text-muted"><mat-icon style="font-size:12px;vertical-align:middle">timer</mat-icon> {{ r.read_time }} min de lecture</p>
+          }
+        </div>
+      </a>
+      }
+    </div>
+
+    @if (!resources().length) {
+    <div class="empty-state">
+      <mat-icon>menu_book</mat-icon>
+      <p>Aucune ressource dans cette catégorie</p>
+    </div>
+    }
+  </div>
+  }
+
+</div>

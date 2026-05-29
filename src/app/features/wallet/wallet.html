@@ -1,0 +1,340 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mon Wallet</h1>
+      <p class="page-subtitle text-muted">Gérez vos dépôts, retraits et objectifs d'épargne</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" (click)="openModal('deposit')"><mat-icon>arrow_downward</mat-icon> Déposer</button>
+      <button class="btn btn-outline" (click)="openModal('withdraw')"><mat-icon>arrow_upward</mat-icon> Retirer</button>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  @if (pageLoading()) {
+  <div class="stats-grid">
+    @for (i of [1,2,3]; track i) {
+    <div class="skeleton-card">
+      <div class="skeleton mb-2" style="height:14px;width:50%"></div>
+      <div class="skeleton" style="height:30px;width:70%"></div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Wallet cards -->
+  @if (!pageLoading() && wallet()) {
+  <div class="stats-grid">
+    <div class="stat-card stat-card-primary">
+      <div class="stat-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Solde disponible</p>
+        <p class="stat-value">{{ formatAmount(wallet()!.balance, wallet()!.currency) }}</p>
+      </div>
+    </div>
+    <div class="stat-card stat-card-green">
+      <div class="stat-icon"><mat-icon>savings</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Total épargné</p>
+        <p class="stat-value">{{ formatAmount(wallet()!.total_saved, wallet()!.currency) }}</p>
+      </div>
+      <p class="stat-sub text-xs text-muted">Intérêts : {{ formatAmount(wallet()!.total_interest ?? 0) }}</p>
+    </div>
+    <div class="stat-card stat-card-gold cursor-pointer" (click)="openModal('goal')">
+      <div class="stat-icon"><mat-icon>flag</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">{{ wallet()!.saving_goal_name || 'Objectif d\'épargne' }}</p>
+        @if (wallet()!.saving_goal) { <p class="stat-value">{{ formatAmount(wallet()!.saving_goal!) }}</p> }
+        @if (!wallet()!.saving_goal) { <p class="stat-value text-muted">Définir un objectif</p> }
+      </div>
+      @if (wallet()!.saving_goal) {
+      <div class="stat-progress-bar">
+        <div class="stat-progress-fill"
+             [style.width.%]="(wallet()!.total_saved / wallet()!.saving_goal!) * 100 | number:'1.0-0'"></div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Tabs -->
+  <div class="card mt-4">
+    <div class="tabs-row">
+      <button class="tab-btn" [class.active]="activeTab() === 'transactions'" (click)="activeTab.set('transactions')">
+        Transactions
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'recurring'" (click)="activeTab.set('recurring')">
+        Paiements automatiques
+        <span class="badge badge-secondary ml-1">{{ recurring().length }}</span>
+      </button>
+      <button class="tab-btn tab-btn-action" (click)="openModal('recurring')">
+        + Nouveau paiement auto
+      </button>
+    </div>
+
+    <!-- Transaction filter -->
+    @if (activeTab() === 'transactions') {
+    <div class="tx-filter-row">
+      @for (f of ['', 'deposit', 'withdrawal', 'investment', 'interest']; track f) {
+      <button class="filter-pill"
+              [class.active]="txFilter() === f"
+              (click)="filterTx(f)">
+        {{ f === '' ? 'Tout' : txTypeLabel(f) }}
+      </button>
+      }
+    </div>
+    }
+
+    <!-- Transactions table -->
+    @if (activeTab() === 'transactions') {
+    <div>
+      @if (!transactions().length) {
+      <div class="empty-state">
+        <mat-icon>payments</mat-icon><p>Aucune transaction</p>
+        <button class="btn btn-primary btn-sm" (click)="openModal('deposit')">Faire un dépôt</button>
+      </div>
+      }
+
+      @if (transactions().length) {
+      <div class="table-responsive">
+      <table class="lobi-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Référence</th>
+            <th>Montant</th>
+            <th>Méthode</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tx of transactions(); track tx.id) {
+          <tr>
+            <td>
+              <span class="badge" [ngClass]="txSignClass(tx.type) === 'amount-positive' ? 'badge-green' : 'badge-coral'">
+                {{ txTypeLabel(tx.type) }}
+              </span>
+            </td>
+            <td><code class="text-xs">{{ tx.reference }}</code></td>
+            <td class="font-semibold" [ngClass]="txSignClass(tx.type)">
+              {{ txSign(tx.type) }}{{ formatAmount(tx.amount, tx.currency) }}
+            </td>
+            <td>{{ tx.pay_method?.replace('_', ' ') | titlecase }}</td>
+            <td><span class="badge" [ngClass]="statusClass(tx.status)">{{ statusLabel(tx.status) }}</span></td>
+            <td class="text-muted text-sm">{{ tx.created_at | date:'dd/MM/yy HH:mm' }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      </div><!-- /table-responsive -->
+      }
+
+      <!-- Pagination -->
+      @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="btn btn-ghost btn-sm" [disabled]="page() === 1" (click)="prevPage()">← Précédent</button>
+        <span class="text-sm text-muted">Page {{ page() }} / {{ totalPages }}</span>
+        <button class="btn btn-ghost btn-sm" [disabled]="page() === totalPages" (click)="nextPage()">Suivant →</button>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Recurring payments -->
+    @if (activeTab() === 'recurring') {
+    <div>
+      @if (!recurring().length) {
+      <div class="empty-state">
+        <mat-icon>autorenew</mat-icon><p>Aucun paiement automatique</p>
+        <button class="btn btn-primary btn-sm" (click)="openModal('recurring')">Configurer</button>
+      </div>
+      }
+      @if (recurring().length) {
+      <div class="recurring-list">
+        @for (r of recurring(); track r.id) {
+        <div class="recurring-item">
+          <div class="recurring-info">
+            <p class="font-medium">{{ formatAmount(r.amount) }}</p>
+            <p class="text-xs text-muted">{{ freqLabels[r.frequency] }} · {{ r.pay_method.replace('_',' ') | titlecase }}</p>
+            <p class="text-xs text-muted">Prochain : {{ r.next_run_at | date:'dd/MM/yyyy' }}</p>
+          </div>
+          <div class="recurring-actions">
+            <span class="badge" [class]="r.active ? 'badge-green' : 'badge-secondary'">{{ r.active ? 'Actif' : 'Inactif' }}</span>
+            <button class="btn btn-ghost btn-sm btn-icon-only danger" (click)="deleteRecurring(r.id)" title="Supprimer"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
+
+<!-- ───── MODALS ───── -->
+
+<!-- Deposit modal -->
+@if (activeModal() === 'deposit') {
+<div class="modal-backdrop" (click)="closeModal()"></div>
+}
+@if (activeModal() === 'deposit') {
+<div class="modal">
+  <div class="modal-header">
+    <h3>Déposer de l'argent</h3>
+    <button class="btn-icon" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+  </div>
+  <div class="modal-body">
+    @if (errorMsg()) { <div class="alert alert-error">{{ errorMsg() }}</div> }
+    @if (successMsg()) { <div class="alert alert-success">{{ successMsg() }}</div> }
+    <form [formGroup]="depositForm" (ngSubmit)="submitDeposit()" novalidate>
+      <div class="form-group">
+        <label class="form-label">Montant (CDF)</label>
+        <input type="number" formControlName="amount" class="form-control" placeholder="5 000" min="100"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Méthode de paiement</label>
+        <select formControlName="pay_method" class="form-select">
+          @for (m of payMethods; track m.value) {
+          <option [value]="m.value">{{ m.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Numéro / Carte</label>
+        <input type="text" formControlName="phone_or_card" class="form-control" placeholder="+243 8X XXX XXXX"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description (optionnel)</label>
+        <input type="text" formControlName="description" class="form-control" placeholder="Épargne mensuelle"/>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          @if (!loading()) { <span>Confirmer le dépôt</span> }
+          @if (loading()) { <span class="spinner"></span> }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<!-- Withdraw modal -->
+@if (activeModal() === 'withdraw') {
+<div class="modal-backdrop" (click)="closeModal()"></div>
+}
+@if (activeModal() === 'withdraw') {
+<div class="modal">
+  <div class="modal-header">
+    <h3>Retirer de l'argent</h3>
+    <button class="btn-icon" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+  </div>
+  <div class="modal-body">
+    @if (errorMsg()) { <div class="alert alert-error">{{ errorMsg() }}</div> }
+    @if (successMsg()) { <div class="alert alert-success">{{ successMsg() }}</div> }
+    <p class="text-sm text-muted mb-3">Solde disponible : <strong>{{ formatAmount(wallet()?.balance ?? 0) }}</strong></p>
+    <form [formGroup]="withdrawForm" (ngSubmit)="submitWithdraw()" novalidate>
+      <div class="form-group">
+        <label class="form-label">Montant (CDF)</label>
+        <input type="number" formControlName="amount" class="form-control" placeholder="5 000" min="100"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Méthode</label>
+        <select formControlName="pay_method" class="form-select">
+          @for (m of payMethods; track m.value) {
+          <option [value]="m.value">{{ m.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Numéro / Carte</label>
+        <input type="text" formControlName="phone_or_card" class="form-control" placeholder="+243 8X XXX XXXX"/>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          @if (!loading()) { <span>Confirmer le retrait</span> }
+          @if (loading()) { <span class="spinner"></span> }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<!-- Goal modal -->
+@if (activeModal() === 'goal') {
+<div class="modal-backdrop" (click)="closeModal()"></div>
+}
+@if (activeModal() === 'goal') {
+<div class="modal">
+  <div class="modal-header">
+    <h3>Objectif d'épargne</h3>
+    <button class="btn-icon" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="goalForm" (ngSubmit)="submitGoal()" novalidate>
+      <div class="form-group">
+        <label class="form-label">Nom de l'objectif</label>
+        <input type="text" formControlName="saving_goal_name" class="form-control" placeholder="Achat d'un téléphone"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Montant cible (CDF)</label>
+        <input type="number" formControlName="saving_goal" class="form-control" placeholder="100 000"/>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">Sauvegarder</button>
+      </div>
+    </form>
+  </div>
+</div>
+}
+
+<!-- Recurring modal -->
+@if (activeModal() === 'recurring') {
+<div class="modal-backdrop" (click)="closeModal()"></div>
+}
+@if (activeModal() === 'recurring') {
+<div class="modal">
+  <div class="modal-header">
+    <h3>Paiement automatique</h3>
+    <button class="btn-icon" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+  </div>
+  <div class="modal-body">
+    @if (errorMsg()) { <div class="alert alert-error">{{ errorMsg() }}</div> }
+    <form [formGroup]="recurringForm" (ngSubmit)="submitRecurring()" novalidate>
+      <div class="form-group">
+        <label class="form-label">Montant (CDF)</label>
+        <input type="number" formControlName="amount" class="form-control" placeholder="5 000"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fréquence</label>
+        <select formControlName="frequency" class="form-select">
+          @for (f of frequencies; track f) {
+          <option [value]="f">{{ freqLabels[f] }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Méthode</label>
+        <select formControlName="pay_method" class="form-select">
+          @for (m of payMethods; track m.value) {
+          <option [value]="m.value">{{ m.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Numéro</label>
+        <input type="text" formControlName="phone_or_card" class="form-control"/>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">Créer</button>
+      </div>
+    </form>
+  </div>
+</div>
+}

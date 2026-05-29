@@ -1,0 +1,313 @@
+<div class="onboarding-wrapper">
+  <div class="onboarding-card card">
+
+    <!-- Progress header -->
+    <div class="ob-header">
+      <div class="ob-step-info">
+        <span class="ob-step-num">Étape {{ step() }} sur {{ totalSteps }}</span>
+        <span class="ob-step-name">{{ stepLabels[step() - 1] }}</span>
+      </div>
+      <div class="ob-progress-bar">
+        <div class="ob-progress-fill" [style.width.%]="progress()"></div>
+      </div>
+      <div class="ob-steps-row">
+        @for (label of stepLabels; track label; let i = $index) {
+        <div class="ob-step-dot"
+             [class.done]="step() > i + 1"
+             [class.active]="step() === i + 1">
+          @if (step() > i + 1) { <mat-icon>check</mat-icon> }
+          @if (step() <= i + 1) { <span>{{ i + 1 }}</span> }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Error -->
+    @if (errorMsg()) {
+    <div class="alert alert-error">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      {{ errorMsg() }}
+    </div>
+    }
+
+    <!-- ──────────── STEP 1 – Compte ──────────── -->
+    @if (step() === 1) {
+    <div class="ob-section fade-in">
+      <div class="ob-section-header">
+        <h2 class="font-display text-2xl font-bold">Créer votre compte</h2>
+        <p class="text-muted">Rapide – ça prend moins de 30 secondes</p>
+      </div>
+
+      <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" novalidate>
+        <div class="form-group">
+          <label class="form-label">Adresse email</label>
+          <input type="email" formControlName="email" class="form-control"
+                 [class.is-invalid]="s1email.invalid && s1email.touched"
+                 placeholder="vous@exemple.com" autocomplete="email"/>
+          @if (s1email.invalid && s1email.touched) {
+          <span class="form-error">Email valide requis</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <div class="input-pw-wrap">
+            <input [type]="showPwd() ? 'text' : 'password'" formControlName="password"
+                   class="form-control" [class.is-invalid]="s1pwd.invalid && s1pwd.touched"
+                   placeholder="Min 8 caractères" autocomplete="new-password"/>
+            <button type="button" class="pw-toggle" (click)="showPwd.update(v => !v)" tabindex="-1">
+              <mat-icon>{{ showPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (s1pwd.pristine) {
+          <span class="form-hint">Doit contenir majuscule, minuscule et chiffre</span>
+          }
+          @if (s1pwd.invalid && s1pwd.touched) {
+          <span class="form-error">Min 8 caractères avec majuscule, minuscule et chiffre</span>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" [disabled]="loading()">
+          @if (!loading()) { <span>Créer mon compte →</span> }
+          @if (loading()) { <span class="spinner"></span> }
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-muted mt-3">
+        Déjà un compte ? <a routerLink="/auth/login" class="link">Se connecter</a>
+      </p>
+    </div>
+    }
+
+    <!-- ──────────── STEP 2 – Profil ──────────── -->
+    @if (step() === 2) {
+    <div class="ob-section fade-in">
+      <div class="ob-section-header">
+        <h2 class="font-display text-2xl font-bold">Qui êtes-vous ?</h2>
+        <p class="text-muted">Quelques informations pour personnaliser votre expérience</p>
+      </div>
+
+      <form [formGroup]="step2Form" (ngSubmit)="submitStep2()" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nom complet</label>
+            <input type="text" formControlName="fullname" class="form-control"
+                   [class.is-invalid]="s2name.invalid && s2name.touched"
+                   placeholder="Jean Mbeki"/>
+            @if (s2name.invalid && s2name.touched) {
+            <span class="form-error">Nom requis (min 3 caractères)</span>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Téléphone (Mobile Money)</label>
+            <input type="tel" formControlName="telephone" class="form-control"
+                   [class.is-invalid]="s2phone.invalid && s2phone.touched"
+                   placeholder="+243 81X XXX XXXX"/>
+            @if (s2phone.invalid && s2phone.touched) {
+            <span class="form-error">Numéro valide requis</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date de naissance</label>
+            <input type="date" formControlName="date_naissance" class="form-control"
+                   [class.is-invalid]="s2dob.invalid && s2dob.touched"/>
+            @if (s2dob.invalid && s2dob.touched) {
+            <span class="form-error">Date requise</span>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tranche d'âge</label>
+            <select formControlName="tranche_age" class="form-select">
+              @for (t of trancheAges; track t) {
+              <option [value]="t">{{ t }} ans</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ville</label>
+            <input type="text" formControlName="ville" class="form-control"
+                   [class.is-invalid]="s2ville.invalid && s2ville.touched"
+                   placeholder="Kinshasa"/>
+            @if (s2ville.invalid && s2ville.touched) {
+            <span class="form-error">Ville requise</span>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pays</label>
+            <input type="text" formControlName="pays" class="form-control"/>
+          </div>
+        </div>
+
+        <div class="ob-actions">
+          <button type="button" class="btn btn-outline" (click)="back()">← Retour</button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+            @if (!loading()) { <span>Continuer →</span> }
+            @if (loading()) { <span class="spinner"></span> }
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+
+    <!-- ──────────── STEP 3 – KYC Upload ──────────── -->
+    @if (step() === 3) {
+    <div class="ob-section fade-in">
+      <div class="ob-section-header">
+        <h2 class="font-display text-2xl font-bold">Vérification d'identité</h2>
+        <p class="text-muted">Requis pour déposer de l'argent et investir. Sécurisé et confidentiel.</p>
+      </div>
+
+      <!-- Document type selector -->
+      <div class="form-group">
+        <label class="form-label">Type de document</label>
+        <div class="doc-type-grid">
+          @for (dt of documentTypes; track dt.value) {
+          <button type="button"
+                  class="doc-type-btn"
+                  [class.active]="selectedDocType() === dt.value"
+                  (click)="selectedDocType.set(dt.value)">
+            {{ dt.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Document upload -->
+      <div class="upload-grid">
+        <div class="upload-zone" [class.has-file]="kycFiles.document">
+          <input type="file" id="doc-front" accept=".jpg,.jpeg,.png,.pdf" (change)="onFileChange($event, 'document')"/>
+          <label for="doc-front" class="upload-label">
+            @if (!kycStep3Preview().doc) {
+            <div>
+              <div class="upload-icon"><mat-icon>description</mat-icon></div>
+              <p class="upload-title">Recto du document *</p>
+              <p class="upload-hint">JPG, PNG ou PDF – max 10MB</p>
+            </div>
+            }
+            @if (kycStep3Preview().doc) {
+            <img [src]="kycStep3Preview().doc" class="upload-preview" alt="preview"/>
+            }
+          </label>
+        </div>
+
+        <div class="upload-zone" [class.has-file]="kycFiles.back">
+          <input type="file" id="doc-back" accept=".jpg,.jpeg,.png,.pdf" (change)="onFileChange($event, 'back')"/>
+          <label for="doc-back" class="upload-label">
+            @if (!kycStep3Preview().back) {
+            <div>
+              <div class="upload-icon"><mat-icon>flip_to_front</mat-icon></div>
+              <p class="upload-title">Verso (optionnel)</p>
+              <p class="upload-hint">JPG, PNG ou PDF</p>
+            </div>
+            }
+            @if (kycStep3Preview().back) {
+            <img [src]="kycStep3Preview().back" class="upload-preview" alt="preview"/>
+            }
+          </label>
+        </div>
+
+        <div class="upload-zone" [class.has-file]="kycFiles.selfie">
+          <input type="file" id="doc-selfie" accept=".jpg,.jpeg,.png,.webp" (change)="onFileChange($event, 'selfie')"/>
+          <label for="doc-selfie" class="upload-label">
+            @if (!kycStep3Preview().selfie) {
+            <div>
+              <div class="upload-icon"><mat-icon>face</mat-icon></div>
+              <p class="upload-title">Selfie avec document (optionnel)</p>
+              <p class="upload-hint">JPG, PNG, WEBP</p>
+            </div>
+            }
+            @if (kycStep3Preview().selfie) {
+            <img [src]="kycStep3Preview().selfie" class="upload-preview" alt="preview"/>
+            }
+          </label>
+        </div>
+      </div>
+
+      <div class="ob-actions">
+        <button type="button" class="btn btn-outline" (click)="back()">← Retour</button>
+        <button type="button" class="btn btn-primary" [disabled]="loading() || !step3Valid()" (click)="submitStep3()">
+          @if (!loading()) { <span>Envoyer pour vérification →</span> }
+          @if (loading()) { <span class="spinner"></span> }
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- ──────────── STEP 4 – KYC En attente ──────────── -->
+    @if (step() === 4) {
+    <div class="ob-section fade-in ob-pending">
+      <h2 class="font-display text-2xl font-bold">Vérification en cours</h2>
+      <p class="text-body text-muted">
+        Vos documents ont été soumis. Notre équipe les vérifie généralement en <strong>24 à 48h</strong>.
+      </p>
+      <p class="text-muted text-sm">Vous recevrez une notification dès que votre compte sera vérifié.</p>
+
+      <div class="pending-steps">
+        <div class="pending-step done">
+          <span class="step-check"><mat-icon>check</mat-icon></span>
+          <span>Compte créé</span>
+        </div>
+        <div class="pending-step done">
+          <span class="step-check"><mat-icon>check</mat-icon></span>
+          <span>Profil complété</span>
+        </div>
+        <div class="pending-step active">
+          <span class="step-check pulse-dot"></span>
+          <span>Documents en cours de vérification</span>
+        </div>
+        <div class="pending-step">
+          <span class="step-check num">4</span>
+          <span>Profil d'investisseur</span>
+        </div>
+      </div>
+
+      <div class="ob-actions ob-actions-center">
+        <button type="button" class="btn btn-primary" (click)="next()">
+          Continuer quand même →
+        </button>
+        <a routerLink="/dashboard" class="btn btn-outline">Aller au tableau de bord</a>
+      </div>
+    </div>
+    }
+
+    <!-- ──────────── STEP 5 – Profil d'investisseur ──────────── -->
+    @if (step() === 5) {
+    <div class="ob-section fade-in">
+      <div class="ob-section-header">
+        <h2 class="font-display text-2xl font-bold">Votre profil d'investisseur</h2>
+        <p class="text-muted">Choisissez votre stratégie. Vous pourrez la modifier plus tard.</p>
+      </div>
+
+      <div class="risk-grid">
+        @for (rp of riskProfiles; track rp.value) {
+        <button type="button"
+                class="risk-card"
+                [class.selected]="selectedRisk() === rp.value"
+                [style.--risk-color]="rp.color"
+                (click)="selectedRisk.set(rp.value)">
+          @if (selectedRisk() === rp.value) { <div class="risk-check"><mat-icon>check</mat-icon></div> }
+          <div class="risk-icon"><mat-icon>{{ rp.icon }}</mat-icon></div>
+          <h3 class="risk-label">{{ rp.label }}</h3>
+          <p class="risk-desc">{{ rp.desc }}</p>
+        </button>
+        }
+      </div>
+
+      <div class="ob-actions">
+        <button type="button" class="btn btn-outline" (click)="back()">← Retour</button>
+        <button type="button" class="btn btn-primary" [disabled]="loading()" (click)="submitStep5()">
+          @if (!loading()) { <span>Commencer à investir</span> }
+          @if (loading()) { <span class="spinner"></span> }
+        </button>
+      </div>
+    </div>
+    }
+
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Tableau de bord Admin</h1>
+      <p class="page-subtitle text-muted">Vue d'ensemble de la plateforme Lobi</p>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  @if (loading()) {
+  <div class="stats-grid">
+    @for (i of [1,2,3,4]; track i) {
+    <div class="skeleton-card">
+      <div class="skeleton mb-2" style="height:14px;width:50%"></div>
+      <div class="skeleton" style="height:30px;width:70%"></div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Stats cards -->
+  @if (!loading() && data()) {
+  <div class="stats-grid">
+
+    <div class="stat-card stat-card-primary">
+      <div class="stat-icon"><mat-icon>people</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Utilisateurs inscrits</p>
+        <p class="stat-value">{{ data()?.total_users ?? 0 }}</p>
+      </div>
+      <a routerLink="/admin/members" class="stat-link">Voir →</a>
+    </div>
+
+    <div class="stat-card stat-card-gold">
+      <div class="stat-icon"><mat-icon>verified_user</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">KYC en attente</p>
+        <p class="stat-value">{{ data()?.pending_kyc ?? 0 }}</p>
+      </div>
+      <a routerLink="/admin/kyc" class="stat-link">Examiner →</a>
+    </div>
+
+    <div class="stat-card stat-card-green">
+      <div class="stat-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Total dépôts (CDF)</p>
+        <p class="stat-value">{{ formatAmount(data()?.total_deposits ?? 0) }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-secondary">
+      <div class="stat-icon"><mat-icon>show_chart</mat-icon></div>
+      <div class="stat-body">
+        <p class="stat-label">Total investissements</p>
+        <p class="stat-value">{{ formatAmount(data()?.total_investments ?? 0) }}</p>
+      </div>
+      <a routerLink="/admin/investments" class="stat-link">Voir →</a>
+    </div>
+
+  </div>
+  }
+
+  <!-- Quick links -->
+  @if (!loading()) {
+  <div class="dashboard-cols">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Actions rapides</h3>
+      </div>
+      <div class="quick-actions">
+        <a routerLink="/admin/members" class="quick-action">
+          <span class="qa-icon"><mat-icon>people</mat-icon></span>
+          <span>Adhérents</span>
+        </a>
+        <a routerLink="/admin/kyc" class="quick-action">
+          <span class="qa-icon"><mat-icon>verified_user</mat-icon></span>
+          <span>KYC</span>
+        </a>
+        <a routerLink="/admin/investments" class="quick-action">
+          <span class="qa-icon"><mat-icon>trending_up</mat-icon></span>
+          <span>Investissements</span>
+        </a>
+        <a routerLink="/admin/community" class="quick-action">
+          <span class="qa-icon"><mat-icon>school</mat-icon></span>
+          <span>Communauté</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  }
+
+</div>

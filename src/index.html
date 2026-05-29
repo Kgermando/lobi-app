@@ -6,8 +6,106 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- App loading splash — removed once Angular bootstraps -->
+  <div id="app-splash">
+    <div class="splash-ring">
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="54" stroke="#E8EDF5" stroke-width="6"/>
+        <circle cx="60" cy="60" r="54" stroke="url(#splash-grad)" stroke-width="6"
+                stroke-linecap="round" stroke-dasharray="200 140"/>
+        <defs>
+          <linearGradient id="splash-grad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#1A4D8F"/>
+            <stop offset="100%" stop-color="#2BA8A4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <img src="/images/logo.png" alt="Lobi" class="splash-logo"/>
+    </div>
+    <p class="splash-label">LOBI</p>
+    <p class="splash-tag">Assurons l'avenir</p>
+  </div>
+
+  <style>
+    #app-splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: #F5F7FA;
+      z-index: 9999;
+      transition: opacity .4s ease, visibility .4s ease;
+    }
+    #app-splash.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .splash-ring {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      animation: splash-spin 1.4s linear infinite;
+    }
+    .splash-ring svg {
+      width: 100%;
+      height: 100%;
+    }
+    .splash-logo {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 4px 16px rgba(26,77,143,.2);
+      animation: splash-spin-reverse 1.4s linear infinite;
+    }
+    .splash-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1A4D8F;
+      letter-spacing: .12em;
+      margin: 0;
+    }
+    .splash-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: .875rem;
+      color: #2BA8A4;
+      font-style: italic;
+      margin: 0;
+    }
+    @keyframes splash-spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes splash-spin-reverse {
+      to { transform: rotate(-360deg); }
+    }
+  </style>
+
   <app-root></app-root>
+
+  <script>
+    // Hide splash once Angular has rendered the first component
+    document.addEventListener('DOMContentLoaded', function () {
+      var splash = document.getElementById('app-splash');
+      var observer = new MutationObserver(function () {
+        var root = document.querySelector('app-root');
+        if (root && root.children.length > 0) {
+          splash.classList.add('hidden');
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.querySelector('app-root'), { childList: true, subtree: true });
+    });
+  </script>
 </body>
 </html>

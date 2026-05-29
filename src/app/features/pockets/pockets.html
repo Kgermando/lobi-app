@@ -1,0 +1,234 @@
+<div class="pockets-page">
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="hero-icon-box">
+      <mat-icon>savings</mat-icon>
+    </div>
+    <div class="hero-text">
+      <h1 class="hero-title">Mes Poches d'Investissement</h1>
+      <p class="hero-sub">Faites fructifier votre épargne dans des réseaux locaux</p>
+    </div>
+    <div class="hero-deco"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <div class="tabs-pills">
+      <button class="tab-pill" [class.active]="activeTab() === 'networks'" (click)="activeTab.set('networks')">
+        <mat-icon>hub</mat-icon>
+        Réseaux disponibles
+        <span class="pill-count">{{ networks().length }}</span>
+      </button>
+      <button class="tab-pill" [class.active]="activeTab() === 'mypockets'" (click)="activeTab.set('mypockets')">
+        <mat-icon>trending_up</mat-icon>
+        Mes poches actives
+        <span class="pill-count pill-green">{{ myPockets().length }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Networks tab ── -->
+  @if (activeTab() === 'networks') {
+  <div>
+
+    <!-- Skeleton -->
+    @if (loading()) {
+    <div class="cards-grid">
+      @for (i of [1,2,3]; track i) {
+      <div class="skeleton-card">
+        <div class="skeleton" style="height:185px"></div>
+        <div style="padding:1.25rem">
+          <div class="skeleton mb-3" style="height:16px;width:55%;border-radius:6px"></div>
+          <div class="skeleton mb-2" style="height:12px;width:85%;border-radius:6px"></div>
+          <div class="skeleton" style="height:12px;width:70%;border-radius:6px"></div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Network cards -->
+    @if (!loading()) {
+    <div class="cards-grid">
+      @for (net of networks(); track net.id) {
+      <div class="net-card">
+
+        <!-- Banner -->
+        <div class="net-banner" [ngClass]="'banner-' + net.type">
+          <div class="banner-circles"></div>
+          <span class="net-type-badge">{{ pocketTypeLabel(net.type) }}</span>
+          <div class="banner-icon-circle">
+            @switch (net.type) {
+              @case ('secure')         { <mat-icon>shield</mat-icon> }
+              @case ('local_projects') { <mat-icon>construction</mat-icon> }
+              @default                 { <mat-icon>rocket_launch</mat-icon> }
+            }
+          </div>
+          <div class="banner-name-overlay">
+            <h3 class="net-name">{{ net.name }}</h3>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="net-body">
+          <p class="net-desc">{{ net.description }}</p>
+
+          <div class="net-stats">
+            <div class="stat-item">
+              <span class="stat-val green">{{ net.interest_rate }}%</span>
+              <span class="stat-lbl">Taux d'intérêt</span>
+            </div>
+            <div class="stat-sep"></div>
+            <div class="stat-item">
+              <span class="stat-val">{{ formatAmount(net.min_amount) }}</span>
+              <span class="stat-lbl">Dépôt minimum</span>
+            </div>
+            <div class="stat-sep"></div>
+            <div class="stat-item">
+              <span class="stat-val">{{ net.investors ?? 0 }}</span>
+              <span class="stat-lbl">Investisseurs</span>
+            </div>
+          </div>
+
+          <div class="funds-block">
+            <div class="funds-row">
+              <span class="funds-lbl">Fonds collectés</span>
+              <span class="funds-val">{{ formatAmount(net.total_funds ?? 0) }}</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" [ngClass]="'fill-' + net.type"
+                   [style.width.%]="net.max_amount ? ((net.total_funds ?? 0) / net.max_amount) * 100 : 0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="net-footer">
+          <button class="invest-btn" [ngClass]="'ibtn-' + net.type"
+                  (click)="openInvest(net)" [disabled]="!net.active">
+            <mat-icon>{{ net.active ? 'add_circle' : 'lock' }}</mat-icon>
+            {{ net.active ? 'Investir dans ce réseau' : 'Réseau clôturé' }}
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- ── My pockets tab ── -->
+  @if (activeTab() === 'mypockets') {
+  <div>
+
+    @if (!myPockets().length) {
+    <div class="empty-wrap">
+      <div class="empty-icon-box"><mat-icon>savings</mat-icon></div>
+      <h3 class="empty-title">Aucune poche active</h3>
+      <p class="empty-sub">Rejoignez un réseau d'investissement pour démarrer</p>
+      <button class="btn btn-primary" (click)="activeTab.set('networks')">
+        <mat-icon>hub</mat-icon> Explorer les réseaux
+      </button>
+    </div>
+    }
+
+    @if (myPockets().length) {
+    <div class="cards-grid">
+      @for (p of myPockets(); track p.id) {
+      <div class="pocket-card">
+
+        <div class="pocket-top">
+          <div class="pocket-top-left">
+            <span class="pocket-type-chip" [ngClass]="networkTypeClass(p.network.type)">
+              {{ pocketTypeLabel(p.network.type) }}
+            </span>
+            <h3 class="pocket-name">{{ p.network.name }}</h3>
+          </div>
+          <span class="status-pill" [class.is-active]="p.status === 'active'">{{ p.status }}</span>
+        </div>
+
+        <div class="pocket-amounts">
+          <div class="amount-col">
+            <span class="amount-lbl">Investi</span>
+            <span class="amount-val">{{ formatAmount(p.amount_invested) }}</span>
+          </div>
+          <div class="amount-col">
+            <span class="amount-lbl">Valeur actuelle</span>
+            <span class="amount-val teal">{{ formatAmount(p.current_value ?? p.amount_invested) }}</span>
+          </div>
+          <div class="amount-col">
+            <span class="amount-lbl">Intérêts gagnés</span>
+            <span class="amount-val green">+{{ formatAmount(p.interest_earned ?? 0) }}</span>
+          </div>
+        </div>
+
+        <div class="pocket-perf">
+          <div class="perf-track">
+            <div class="perf-fill" [style.width.%]="profitRate(p)"></div>
+          </div>
+          <span class="perf-label">{{ profitRate(p) | number:'1.1-1' }}% rendement</span>
+        </div>
+
+        @if (p.maturity_date) {
+        <p class="pocket-maturity">
+          <mat-icon>event</mat-icon> Échéance : {{ p.maturity_date | date:'dd/MM/yyyy' }}
+        </p>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+
+</div>
+
+<!-- Modal backdrop -->
+@if (selectedNet()) {
+<div class="modal-backdrop" (click)="closeModal()"></div>
+}
+
+<!-- Invest modal -->
+@if (selectedNet()) {
+<div class="invest-modal">
+  <div class="imodal-header" [ngClass]="'banner-' + selectedNet()!.type">
+    <div>
+      <h3 class="imodal-title">{{ selectedNet()!.name }}</h3>
+      <p class="imodal-sub">{{ selectedNet()!.interest_rate }}% · Min {{ formatAmount(selectedNet()!.min_amount) }}</p>
+    </div>
+    <button class="imodal-close-btn" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <div class="imodal-body">
+    @if (errorMsg()) { <div class="alert alert-error">{{ errorMsg() }}</div> }
+    @if (successMsg()) { <div class="alert alert-success">{{ successMsg() }}</div> }
+
+    <div class="imodal-desc">
+      <p class="text-sm">{{ selectedNet()!.description }}</p>
+      <div class="imodal-meta">
+        <span class="meta-chip"><mat-icon>group</mat-icon> {{ selectedNet()!.investors ?? 0 }} investisseurs</span>
+        <span class="meta-chip"><mat-icon>payments</mat-icon> Max {{ formatAmount(selectedNet()!.max_amount) }}</span>
+      </div>
+    </div>
+
+    <form [formGroup]="investForm" (ngSubmit)="submitInvest()" novalidate>
+      <div class="form-group">
+        <label class="form-label">Montant à investir (CDF)</label>
+        <input type="number" formControlName="amount" class="form-control"
+               [min]="selectedNet()!.min_amount"
+               [placeholder]="selectedNet()!.min_amount.toString()"/>
+        <span class="form-hint">Minimum : {{ formatAmount(selectedNet()!.min_amount) }}</span>
+      </div>
+      <div class="imodal-actions">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="investing()">
+          @if (!investing()) { <span><mat-icon>check_circle</mat-icon> Confirmer</span> }
+          @if (investing()) { <span class="spinner"></span> }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

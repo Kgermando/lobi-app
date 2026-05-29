@@ -1,0 +1,634 @@
+﻿<app-navbar [showHamburger]="false"></app-navbar>
+
+<!-- ══════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-mesh"></div>
+  <div class="hero-glow g1"></div>
+  <div class="hero-glow g2"></div>
+  <div class="hero-glow g3"></div>
+
+  <div class="container">
+    <div class="hero-inner">
+
+      <!-- ── Copy ─────────────────────────────────── -->
+      <div class="hero-copy reveal">
+
+        <!-- <div class="hero-pill">
+          <span class="hero-pill-dot"></span>
+          <span>2 500+ investisseurs actifs en RDC</span>
+        </div> -->
+
+        <h1 class="hero-title">
+          Préparer votre avenir avec<br>
+          <span class="hero-gradient">Lobi</span>
+        </h1>
+
+        <p class="hero-desc">
+          La plateforme d'investissement participatif qui connecte les jeunes
+          entrepreneurs congolais à des réseaux à fort rendement.
+          Commencez avec <strong>5 000 CDF</strong> — en 2 minutes.
+        </p>
+
+        <div class="hero-actions">
+          <a routerLink="/auth/register" class="btn-cta">
+            Commencer gratuitement
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+          <a href="#comment" class="btn-ghost">
+            <mat-icon>play_circle</mat-icon>
+            Comment ca marche
+          </a>
+        </div>
+
+        <div class="hero-proof">
+          <div class="proof-avs">
+            @for (t of testimonials; track t.name) {
+              <div class="pav" [class]="'pav-' + t.color">{{ t.initials }}</div>
+            }
+            <div class="pav pav-more">+2k</div>
+          </div>
+          <div class="proof-text">
+            <span class="proof-stars">★★★★★</span>
+            <span>Rejoints par <strong>2 500+</strong> investisseurs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Dashboard preview ─────────────────────── -->
+      <div class="hero-visual reveal" style="transition-delay:.1s">
+
+        <!-- Main card -->
+        <div class="hv-card hv-main">
+          <div class="hvc-topbar">
+            <div class="hvc-dots"><span></span><span></span><span></span></div>
+            <span class="hvc-tab active">Dashboard</span>
+            <span class="hvc-tab">Reseaux</span>
+            <span class="hvc-tab">Wallet</span>
+          </div>
+
+          <div class="hvc-stats">
+            <div class="hvc-stat">
+              <p class="hvcs-label">Portefeuille</p>
+              <p class="hvcs-value">125 000 CDF</p>
+              <p class="hvcs-growth">
+                <mat-icon>arrow_upward</mat-icon>+22% ce mois
+              </p>
+            </div>
+            <div class="hvc-stat">
+              <p class="hvcs-label">Rendements</p>
+              <p class="hvcs-value text-green">+28 500 CDF</p>
+              <p class="hvcs-growth text-green">
+                <mat-icon>trending_up</mat-icon>3 reseaux
+              </p>
+            </div>
+          </div>
+
+          <div class="hvc-chart">
+            @for (h of [35, 48, 42, 68, 56, 84, 100]; track h; let i = $index) {
+              <div class="hvc-bar" [style.height.%]="h" [class.hvc-bar-active]="h === 100"></div>
+            }
+          </div>
+          <div class="hvc-months">
+            @for (m of ['J','F','M','A','M','J','J']; track m) {
+              <span>{{ m }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Floating notification -->
+        <div class="hv-card hv-notif">
+          <mat-icon class="hv-notif-ic">check_circle</mat-icon>
+          <div>
+            <p class="hv-notif-t">Rendement recu !</p>
+            <p class="hv-notif-s">+2 500 CDF - Reseau Sikama</p>
+          </div>
+        </div>
+
+        <!-- Floating pill: members -->
+        <div class="hv-card hv-pill">
+          <mat-icon>groups</mat-icon>
+          <div>
+            <p class="hvp-val">2 500+</p>
+            <p class="hvp-lab">membres</p>
+          </div>
+        </div>
+
+        <!-- Floating ROI badge -->
+        <div class="hv-card hv-roi">
+          <p class="hvr-pct">+18%</p>
+          <p class="hvr-lab">/ mois</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,36 C360,72 1080,0 1440,36 L1440,72 L0,72 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     TICKER — live investment stream
+══════════════════════════════════════════════════════ -->
+@if (activities().length > 0) {
+<div class="ticker-strip">
+  <div class="ticker-badge">
+    <span class="ldot"></span>EN DIRECT
+  </div>
+  <div class="ticker-track">
+    <div class="ticker-run">
+      @for (a of activities(); track a.created_at) {
+        <div class="tk-item">
+          <mat-icon [class]="'tki-' + activityColor(a.type)">{{ activityIcon(a.type) }}</mat-icon>
+          <span><strong>{{ a.user_display }}</strong> {{ a.action }}</span>
+          @if (a.amount > 0) {
+            <span class="tki-amt">{{ formatCDF(a.amount) }}</span>
+          }
+          <span class="tki-sep">·</span>
+        </div>
+      }
+      @for (a of activities(); track 'b-' + a.created_at) {
+        <div class="tk-item">
+          <mat-icon [class]="'tki-' + activityColor(a.type)">{{ activityIcon(a.type) }}</mat-icon>
+          <span><strong>{{ a.user_display }}</strong> {{ a.action }}</span>
+          @if (a.amount > 0) {
+            <span class="tki-amt">{{ formatCDF(a.amount) }}</span>
+          }
+          <span class="tki-sep">·</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+}
+
+<!-- ══════════════════════════════════════════════════════
+     METRICS
+══════════════════════════════════════════════════════ -->
+<section class="metrics-section">
+  <div class="container">
+    <div class="metrics-grid">
+      @for (m of metrics; track m.label; let i = $index) {
+        <div class="metric-item reveal" [style.transition-delay]="(i * 0.1) + 's'">
+          <div class="mi-icon" [class]="'mi-icon-' + m.color">
+            <mat-icon>{{ m.icon }}</mat-icon>
+          </div>
+          <p class="mi-value" [attr.data-count]="m.value" [attr.data-suffix]="m.suffix">{{ m.display }}</p>
+          <p class="mi-label">{{ m.label }}</p>
+        </div>
+        @if (i < metrics.length - 1) {
+          <div class="mi-sep"></div>
+        }
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FEATURES BENTO
+══════════════════════════════════════════════════════ -->
+<section class="bento-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Pourquoi Lobi</span>
+      <h2 class="stitle">Concu pour<br>l'investisseur congolais moderne</h2>
+      <p class="ssub">Tout ce qu'il vous faut pour faire fructifier votre argent intelligemment, en un seul endroit.</p>
+    </div>
+
+    <div class="bento-grid">
+
+      <!-- Card: Securite (large) -->
+      <div class="bc bc-lg bc-security reveal">
+        <div class="bc-icon-wrap bc-icon-primary">
+          <mat-icon>shield</mat-icon>
+        </div>
+        <h3 class="bc-title">Investissements 100% securises</h3>
+        <p class="bc-desc">Chaque reseau est verifie, audite et couvert par des contrats legaux. Votre capital est protege a chaque etape.</p>
+        <div class="bc-security-checks">
+          <div class="sc-item">
+            <mat-icon>verified</mat-icon>
+            <span>KYC certifie</span>
+          </div>
+          <div class="sc-item">
+            <mat-icon>gavel</mat-icon>
+            <span>Contrats legaux</span>
+          </div>
+          <div class="sc-item">
+            <mat-icon>fact_check</mat-icon>
+            <span>Audit mensuel</span>
+          </div>
+          <div class="sc-item">
+            <mat-icon>lock</mat-icon>
+            <span>Donnees chiffrees</span>
+          </div>
+        </div>
+        <div class="bc-trust-bar">
+          <div class="bc-trust-fill"></div>
+        </div>
+        <p class="bc-trust-label">Score de confiance : <strong>92/100</strong></p>
+      </div>
+
+      <!-- Card: Rendements -->
+      <div class="bc bc-sm bc-returns reveal" style="transition-delay:.1s">
+        <div class="bc-icon-wrap bc-icon-green">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <h3 class="bc-title">Rendements en temps reel</h3>
+        <p class="bc-desc">Suivez vos retours au jour le jour depuis votre dashboard.</p>
+        <div class="bc-highlight bc-hl-green">Jusqu'a +25% / mois</div>
+      </div>
+
+      <!-- Card: Communaute -->
+      <div class="bc bc-sm bc-community reveal" style="transition-delay:.2s">
+        <div class="bc-icon-wrap bc-icon-teal">
+          <mat-icon>groups</mat-icon>
+        </div>
+        <h3 class="bc-title">Communaute active</h3>
+        <p class="bc-desc">Forums, webinars exclusifs et mentors pour accelerer votre parcours.</p>
+        <div class="bc-avatars">
+          @for (t of testimonials; track t.name) {
+            <div class="bca-av" [class]="'pav-' + t.color">{{ t.initials }}</div>
+          }
+          <div class="bca-av bca-more">+2k</div>
+        </div>
+      </div>
+
+      <!-- Card: Wallet (large) -->
+      <div class="bc bc-lg bc-wallet reveal" style="transition-delay:.15s">
+        <div class="bc-icon-wrap bc-icon-gold">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <h3 class="bc-title">Wallet & Dashboard integres</h3>
+        <p class="bc-desc">Gerez depots, retraits et investissements depuis une interface mobile-first ultra simple.</p>
+        <div class="bc-tx-list">
+          <div class="bctx">
+            <div class="bctx-ic bctx-ic-green"><mat-icon>arrow_downward</mat-icon></div>
+            <div class="bctx-body">
+              <p>Depot recu</p>
+              <p class="bctx-sub">il y a 2h</p>
+            </div>
+            <span class="bctx-amt bctx-green">+50 000 CDF</span>
+          </div>
+          <div class="bctx">
+            <div class="bctx-ic bctx-ic-teal"><mat-icon>savings</mat-icon></div>
+            <div class="bctx-body">
+              <p>Rendement Reseau A</p>
+              <p class="bctx-sub">il y a 5h</p>
+            </div>
+            <span class="bctx-amt bctx-green">+3 500 CDF</span>
+          </div>
+          <div class="bctx">
+            <div class="bctx-ic bctx-ic-primary"><mat-icon>trending_up</mat-icon></div>
+            <div class="bctx-body">
+              <p>Investissement place</p>
+              <p class="bctx-sub">hier</p>
+            </div>
+            <span class="bctx-amt bctx-primary">-25 000 CDF</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: Mobile -->
+      <div class="bc bc-sm bc-mobile reveal" style="transition-delay:.3s">
+        <div class="bc-icon-wrap bc-icon-coral">
+          <mat-icon>smartphone</mat-icon>
+        </div>
+        <h3 class="bc-title">Mobile First</h3>
+        <p class="bc-desc">Investissez depuis votre telephone, a tout moment, depuis n'importe ou en RDC.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════════════════ -->
+<section id="comment" class="how-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Simple & rapide</span>
+      <h2 class="stitle">De zero a investisseur<br>en 3 etapes</h2>
+      <p class="ssub">Inscription, verification d'identite, premier investissement — moins de 10 minutes.</p>
+    </div>
+
+    <div class="how-grid">
+      @for (s of steps; track s.step; let i = $index) {
+        <div class="how-card reveal" [style.transition-delay]="(i * 0.12) + 's'">
+          <div class="hc-num" [class]="'hcn-' + s.color">{{ s.step }}</div>
+          <div class="hc-icon" [class]="'hci-' + s.color">
+            <mat-icon>{{ s.icon }}</mat-icon>
+          </div>
+          <h3 class="hc-title">{{ s.title }}</h3>
+          <p class="hc-desc">{{ s.description }}</p>
+        </div>
+        @if (i < steps.length - 1) {
+          <div class="how-arrow reveal" [style.transition-delay]="((i + 0.5) * 0.12) + 's'">
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="how-cta reveal">
+      <a routerLink="/auth/register" class="btn-cta">
+        Commencer maintenant
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     INVESTMENT NETWORKS
+══════════════════════════════════════════════════════ -->
+<section id="reseaux" class="networks-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Opportunites</span>
+      <h2 class="stitle">Choisissez votre reseau</h2>
+      <p class="ssub">Des reseaux transparents, soigneusement selectionnes, a fort rendement en RDC.</p>
+    </div>
+
+    @if (loading()) {
+      <div class="nets-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="net-card skeleton-card">
+            <div class="skeleton" style="height:14px;border-radius:4px;margin-bottom:10px"></div>
+            <div class="skeleton" style="height:26px;border-radius:4px;margin-bottom:8px"></div>
+            <div class="skeleton" style="height:48px;border-radius:4px"></div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading()) {
+      <div class="nets-grid">
+        @for (n of networks(); track n.id; let i = $index) {
+          <div class="net-card reveal" [style.transition-delay]="(i * 0.1) + 's'">
+            <div class="nc-stripe" [class]="'ncs-' + networkColor(n.type)"></div>
+
+            @if (n.badge) {
+              <div class="nc-badge" [class]="'ncb-' + networkColor(n.type)">{{ n.badge }}</div>
+            }
+
+            <div class="nc-head">
+              <div class="nc-ico" [class]="'nci-' + networkColor(n.type)">
+                <mat-icon>{{ networkIcon(n.type) }}</mat-icon>
+              </div>
+              <div>
+                <p class="nc-cat">{{ networkCategory(n.type) }}</p>
+                <h3 class="nc-name">{{ n.name }}</h3>
+              </div>
+            </div>
+
+            <p class="nc-desc">{{ n.description }}</p>
+
+            <div class="nc-kpis" [class]="'kpis-bg-' + networkColor(n.type)">
+              <div class="nc-kpi">
+                <p class="kpi-v" [class]="'kpiv-' + networkColor(n.type)">{{ n.interest_rate }}%</p>
+                <p class="kpi-l">par mois</p>
+              </div>
+              @if (n.duration) {
+                <div class="nc-kpi">
+                  <p class="kpi-v">{{ n.duration }}</p>
+                  <p class="kpi-l">duree</p>
+                </div>
+              }
+              <div class="nc-kpi">
+                <p class="kpi-v">{{ n.investors }}</p>
+                <p class="kpi-l">membres</p>
+              </div>
+            </div>
+
+            @if (n.target_amount > 0) {
+              <div class="nc-prog">
+                <div class="ncprog-head">
+                  <span>{{ formatCDF(n.total_funds) }} leves</span>
+                  <span>{{ getProgressPercent(n) }}%</span>
+                </div>
+                <div class="ncprog-track">
+                  <div class="ncprog-fill" [class]="'pgf-' + networkColor(n.type)" [style.width.%]="getProgressPercent(n)"></div>
+                </div>
+                <span class="ncprog-obj">Objectif : {{ formatCDF(n.target_amount) }}</span>
+              </div>
+            }
+
+            @if (n.min_amount > 0) {
+              <p class="nc-min">
+                <mat-icon>info_outline</mat-icon>
+                Min. : <strong>{{ formatCDF(n.min_amount) }}</strong>
+              </p>
+            }
+
+            <a routerLink="/auth/register" class="nc-cta" [class]="'nccta-' + networkColor(n.type)">
+              Investir maintenant
+              <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </div>
+        }
+
+        @if (networks().length === 0) {
+          <div class="nets-empty reveal">
+            <mat-icon>business_center</mat-icon>
+            <p>Aucun reseau disponible pour le moment.</p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     LIVE ACTIVITY SPLIT
+══════════════════════════════════════════════════════ -->
+<section class="activity-section">
+  <div class="container">
+    <div class="act-inner">
+
+      <div class="act-copy reveal">
+        <span class="stag">En direct</span>
+        <h2 class="stitle left">La communaute Lobi bouge en ce moment</h2>
+        <p class="ssub left">Des centaines d'investisseurs actifs chaque jour sur notre plateforme.</p>
+        <a routerLink="/auth/register" class="btn-cta mt-6">
+          Rejoindre maintenant
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+        <div class="act-live-badge">
+          <span class="ldot"></span>
+          Activite en temps reel
+        </div>
+      </div>
+
+      <div class="act-feed reveal" style="transition-delay:.12s">
+        <div class="afeed-header">
+          <span class="afeed-title">Activites recentes</span>
+          <span class="ldot"></span>
+        </div>
+
+        @if (loading()) {
+          @for (i of [1,2,3,4]; track i) {
+            <div class="afeed-item afeed-skeleton">
+              <div class="afi-av" style="background:var(--border)"></div>
+              <div style="flex:1">
+                <div class="skeleton" style="height:13px;border-radius:4px;margin-bottom:5px"></div>
+                <div class="skeleton" style="height:10px;width:55%;border-radius:4px"></div>
+              </div>
+            </div>
+          }
+        }
+
+        @for (a of activities(); track a.created_at; let i = $index) {
+          <div class="afeed-item" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="afi-av" [class]="'fi-av-' + activityColor(a.type)">
+              <mat-icon>{{ activityIcon(a.type) }}</mat-icon>
+            </div>
+            <div class="afi-body">
+              <p class="afi-text">
+                <strong>{{ a.user_display }}</strong> {{ a.action }}
+                @if (a.amount > 0) {
+                  <span class="afi-amt" [class]="a.type === 'interest' ? 'text-green' : 'text-primary'">
+                    {{ formatCDF(a.amount) }}
+                  </span>
+                }
+              </p>
+              <span class="afi-time">{{ relativeTime(a.created_at) }}</span>
+            </div>
+            <div class="afi-pulse" [class]="'pulse-' + activityColor(a.type)"></div>
+          </div>
+        }
+
+        @if (!loading() && activities().length === 0) {
+          <div class="afeed-empty">
+            <mat-icon>show_chart</mat-icon>
+            <p>Soyez le premier a investir !</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════ -->
+<section class="testi-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Temoignages</span>
+      <h2 class="stitle">Ils ont deja choisi Lobi</h2>
+      <p class="ssub">Des vraies personnes, de vrais resultats, au Congo.</p>
+    </div>
+
+    <div class="testi-grid">
+      @for (t of testimonials; track t.name; let i = $index) {
+        <div class="tcard reveal" [style.transition-delay]="(i * 0.1) + 's'">
+          <div class="tcard-top">
+            <div class="tcard-stars">
+              @for (s of [1,2,3,4,5]; track s) { <mat-icon>star</mat-icon> }
+            </div>
+            <div class="tcard-gain" [class]="'tcg-' + t.color">{{ t.gain }}</div>
+          </div>
+          <p class="tcard-text">"{{ t.text }}"</p>
+          <div class="tcard-author">
+            <div class="tcard-av" [class]="'tcav-' + t.color">{{ t.initials }}</div>
+            <div>
+              <p class="tcard-name">{{ t.name }}</p>
+              <p class="tcard-role">{{ t.role }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     CTA FINAL
+══════════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card reveal">
+      <div class="cta-orb co1"></div>
+      <div class="cta-orb co2"></div>
+      <div class="cta-body">
+        <span class="stag stag-light">Commencez aujourd'hui</span>
+        <h2 class="cta-title">Assurons l'avenir, ensemble.</h2>
+        <p class="cta-sub">
+          Rejoignez 2 500+ investisseurs congolais qui batissent leur richesse sur Lobi.<br>
+          Inscription gratuite · KYC rapide · Investissement des 5 000 CDF
+        </p>
+        <div class="cta-actions">
+          <a routerLink="/auth/register" class="btn-cta-white">
+            <mat-icon>rocket_launch</mat-icon>
+            Creer mon compte — c'est gratuit
+          </a>
+          <a routerLink="/auth/login" class="btn-cta-ghost-white">J'ai deja un compte →</a>
+        </div>
+        <p class="cta-note">
+          <mat-icon>lock</mat-icon>
+          Sans carte bancaire · Sans engagement · 100% securise
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="/images/logo.png" alt="Lobi" class="footer-logo-img"/>
+        <span class="footer-logo-name">LOBI</span>
+      </div>
+      <p class="footer-tagline">Assurons l'avenir</p>
+      <p class="footer-desc">
+        La plateforme d'investissement participatif dediee aux jeunes entrepreneurs congolais.
+      </p>
+      <div class="footer-social">
+        <a href="#" class="fsoc" aria-label="Twitter"><mat-icon>alternate_email</mat-icon></a>
+        <a href="#" class="fsoc" aria-label="LinkedIn"><mat-icon>work</mat-icon></a>
+        <a href="#" class="fsoc" aria-label="Instagram"><mat-icon>photo_camera</mat-icon></a>
+        <a href="#" class="fsoc" aria-label="WhatsApp"><mat-icon>chat</mat-icon></a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Plateforme</h4>
+        <a routerLink="/auth/register">Creer un compte</a>
+        <a routerLink="/auth/login">Se connecter</a>
+        <a href="#reseaux">Reseaux</a>
+        <a href="#comment">Comment ca marche</a>
+      </div>
+      <div class="footer-col">
+        <h4>Ressources</h4>
+        <a href="#">FAQ</a>
+        <a href="#">Blog</a>
+        <a href="#">Communaute</a>
+        <a href="#">Webinars</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Conditions d'utilisation</a>
+        <a href="#">Confidentialite</a>
+        <a href="#">Mentions legales</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <p>© 2026 Lobi — Tous droits reserves.</p>
+      <p>Investir comporte des risques. Lisez nos <a href="#" class="flink">mentions legales</a>.</p>
+    </div>
+  </div>
+</footer>

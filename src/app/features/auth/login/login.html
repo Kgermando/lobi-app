@@ -1,0 +1,62 @@
+<div class="login-wrapper">
+  <div class="login-card card">
+    <!-- Header -->
+    <div class="login-header">
+      <h2 class="font-display text-2xl font-bold">Bon retour !</h2>
+      <p class="text-muted">Connectez-vous à votre compte Lobi</p>
+    </div>
+
+    <!-- Error alert -->
+    @if (errorMsg()) {
+    <div class="alert alert-error">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      {{ errorMsg() }}
+    </div>
+    }
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-group">
+        <label class="form-label">Email ou téléphone</label>
+        <input type="email" formControlName="email" class="form-control"
+          [class.is-invalid]="emailCtrl.invalid && emailCtrl.touched" placeholder="votre@email.com"
+          autocomplete="email" />
+        @if (emailCtrl.invalid && emailCtrl.touched) {
+        <span class="form-error">Email requis et valide</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-group">
+          <input [type]="showPwd() ? 'text' : 'password'" formControlName="password" class="form-control"
+            [class.is-invalid]="pwdCtrl.invalid && pwdCtrl.touched" placeholder="••••••••"
+            autocomplete="current-password" />
+          <button type="button" class="input-addon" (click)="showPwd.update(v => !v)" tabindex="-1">
+            <mat-icon>{{ showPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (pwdCtrl.invalid && pwdCtrl.touched) {
+        <span class="form-error">Mot de passe requis (min 6 caractères)</span>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full btn-lg" [class.loading]="loading()" [disabled]="loading()">
+        @if (!loading()) { <span>Se connecter</span> }
+        @if (loading()) { <span class="spinner spinner-sm"></span> }
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p class="text-sm text-muted">
+        Pas encore de compte ?
+        <a routerLink="/auth/register" class="link">Créer un compte gratuit</a>
+      </p>
+    </div>
+  </div>
+</div>

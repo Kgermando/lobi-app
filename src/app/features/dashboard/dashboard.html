@@ -1,0 +1,181 @@
+<div class="page-wrapper">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ greeting() }}, {{ (user?.fullname ?? '').split(' ')[0] || 'vous' }}</h1>
+      <p class="page-subtitle text-muted">Voici un aperçu de vos finances aujourd'hui.</p>
+    </div>
+    <div class="page-header-actions">
+      <a routerLink="/wallet" class="btn btn-primary">
+        <mat-icon>add</mat-icon>
+        Déposer
+      </a>
+    </div>
+  </div>
+
+  <!-- Skeleton while loading -->
+  @if (loading()) {
+    <div class="stats-grid">
+      @for (i of [1,2,3,4]; track i) {
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-sm mb-2"></div>
+        <div class="skeleton skeleton-lg"></div>
+      </div>
+      }
+    </div>
+    <div class="skeleton skeleton-block mt-4"></div>
+  }
+
+  <!-- Content -->
+  @if (!loading() && data()) {
+
+    <!-- KYC alert -->
+    @if (user && user.onboarding_step < 4) {
+    <div class="alert alert-warning">
+      <mat-icon>warning</mat-icon>
+      <span>
+        <strong>Vérification d'identité requise</strong> — Complétez votre KYC pour déposer et investir.
+        <a routerLink="/onboarding" class="link ml-2">Compléter →</a>
+      </span>
+    </div>
+    }
+    <!-- Stats cards -->
+    <div class="stats-grid">
+      <div class="stat-card stat-card-primary">
+        <div class="stat-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Solde disponible</p>
+          <p class="stat-value">{{ formatAmount(data()!.wallet?.balance ?? 0, data()!.wallet?.currency) }}</p>
+        </div>
+        <a routerLink="/wallet" class="stat-link">Gérer →</a>
+      </div>
+
+      <div class="stat-card stat-card-green">
+        <div class="stat-icon"><mat-icon>savings</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Total épargné</p>
+          <p class="stat-value">{{ formatAmount(data()!.wallet?.total_saved ?? 0, data()!.wallet?.currency) }}</p>
+        </div>
+        <p class="stat-sub text-muted text-xs">Intérêts gagnés : {{ formatAmount(data()!.wallet?.total_interest ?? 0) }}</p>
+      </div>
+
+      <div class="stat-card stat-card-gold">
+        <div class="stat-icon"><mat-icon>corporate_fare</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Investissements actifs</p>
+          <p class="stat-value">{{ formatAmount(data()!.total_invested) }}</p>
+        </div>
+        <p class="stat-sub text-xs text-muted">{{ data()!.active_pockets }} poche(s) active(s)</p>
+      </div>
+
+      <div class="stat-card stat-card-secondary">
+        <div class="stat-icon"><mat-icon>flag</mat-icon></div>
+        <div class="stat-body">
+          <p class="stat-label">Objectif d'épargne</p>
+          <p class="stat-value">{{ data()!.goal_progress | number:'1.0-0' }}%</p>
+        </div>
+        <div class="stat-progress-bar">
+          <div class="stat-progress-fill" [style.width.%]="data()!.goal_progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two-column section -->
+    <div class="dashboard-cols">
+
+      <!-- Recent transactions -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Transactions récentes</h3>
+          <a routerLink="/wallet" class="btn btn-ghost btn-sm">Tout voir</a>
+        </div>
+        <div class="card-body p-0">
+    @if (!data()!.recent_transactions.length) {
+          <div class="empty-state empty-state-sm">
+            <mat-icon>payments</mat-icon>
+            <p>Aucune transaction pour l'instant</p>
+            <a routerLink="/wallet" class="btn btn-primary btn-sm">Faire un dépôt</a>
+          </div>
+          }
+
+          @if (data()!.recent_transactions.length) {
+          <div class="tx-list">
+            @for (tx of data()!.recent_transactions; track tx.id) {
+            <div class="tx-item">
+              <div class="tx-icon" [ngClass]="txTypeClass(tx.type)">
+                @switch (tx.type) {
+                  @case ('deposit')    { <mat-icon>arrow_downward</mat-icon> }
+                  @case ('withdrawal') { <mat-icon>arrow_upward</mat-icon> }
+                  @case ('investment') { <mat-icon>show_chart</mat-icon> }
+                  @case ('interest')   { <mat-icon>auto_graph</mat-icon> }
+                  @default             { <mat-icon>sync_alt</mat-icon> }
+                }
+              </div>
+              <div class="tx-body">
+                <p class="tx-label font-medium">{{ txTypeLabel(tx.type) }}</p>
+                <p class="tx-sub text-xs text-muted">{{ tx.description || tx.reference }}</p>
+              </div>
+              <div class="tx-amount" [ngClass]="txSignClass(tx.type)">
+                {{ txSign(tx.type) }}{{ formatAmount(tx.amount, tx.currency) }}
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right column: quick actions + saving goal -->
+      <div class="dashboard-right">
+
+        <!-- Saving goal card -->
+        @if (data()!.wallet?.saving_goal) {
+        <div class="card goal-card">
+          <div class="card-header">
+            <h3 class="card-title">Objectif : {{ data()!.wallet?.saving_goal_name || 'Mon objectif' }}</h3>
+          </div>
+          <div class="goal-body">
+            <div class="goal-amounts">
+              <span class="goal-current">{{ formatAmount(data()!.wallet?.total_saved ?? 0) }}</span>
+              <span class="text-muted text-sm">/ {{ formatAmount(data()!.wallet?.saving_goal ?? 0) }}</span>
+            </div>
+            <div class="progress-bar" style="height:12px; border-radius:999px; background:var(--border-light); overflow:hidden; margin:.75rem 0">
+              <div class="progress-fill"
+                   [style.width.%]="data()!.goal_progress"
+                   style="height:100%; background:linear-gradient(90deg,var(--primary),var(--secondary)); border-radius:999px; transition:width .5s"></div>
+            </div>
+            <p class="text-xs text-muted text-center">{{ data()!.goal_progress | number:'1.0-1' }}% atteint</p>
+          </div>
+        </div>
+        }
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Actions rapides</h3>
+          </div>
+          <div class="quick-actions">
+            <a routerLink="/wallet" class="quick-action">
+              <span class="qa-icon"><mat-icon>arrow_downward</mat-icon></span>
+              <span>Déposer</span>
+            </a>
+            <a routerLink="/wallet" class="quick-action">
+              <span class="qa-icon"><mat-icon>arrow_upward</mat-icon></span>
+              <span>Retirer</span>
+            </a>
+            <a routerLink="/pockets" class="quick-action">
+              <span class="qa-icon"><mat-icon>show_chart</mat-icon></span>
+              <span>Investir</span>
+            </a>
+            <a routerLink="/community" class="quick-action">
+              <span class="qa-icon"><mat-icon>groups</mat-icon></span>
+              <span>Communauté</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  }
+
+</div>

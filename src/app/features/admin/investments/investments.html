@@ -1,0 +1,105 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Investissements</h1>
+      <p class="page-subtitle text-muted">Réseaux d'investissement et transactions</p>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  @if (loading()) {
+  <div class="skeleton-block" style="height:200px"></div>
+  }
+
+  <!-- Networks -->
+  @if (!loading()) {
+  <div>
+    <h3 class="section-title">Réseaux d'investissement</h3>
+    <div class="networks-summary-grid">
+      @for (net of networks(); track net.uuid) {
+      <div class="card network-summary-card">
+        <div class="card-body">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <p class="font-semibold">{{ net.name }}</p>
+              <p class="text-xs text-muted">{{ net.type }}</p>
+            </div>
+            <span class="badge" [class]="net.active ? 'badge-green' : 'badge-secondary'">{{ net.active ? 'Actif' : 'Clôturé' }}</span>
+          </div>
+          <div class="network-summary-stats mt-3">
+            <div>
+              <p class="text-xs text-muted">Investisseurs</p>
+              <p class="font-bold">{{ net.investors ?? 0 }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-muted">Fonds collectés</p>
+              <p class="font-bold">{{ formatAmount(net.total_funds ?? 0) }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-muted">Taux</p>
+              <p class="font-bold text-green">{{ net.interest_rate }}%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Transactions -->
+  @if (!loading()) {
+  <div class="card mt-4">
+    <div class="card-header">
+      <h3 class="card-title">Toutes les transactions</h3>
+    </div>
+    <div class="card-body p-0">
+      <table class="lobi-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Utilisateur</th>
+            <th>Type</th>
+            <th>Montant</th>
+            <th>Méthode</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tx of txs(); track tx.uuid) {
+          <tr>
+            <td><code class="text-xs">{{ tx.reference }}</code></td>
+            <td class="text-sm">{{ tx.user?.fullname || tx.user_uuid?.slice(0,8) }}</td>
+            <td class="text-sm">{{ tx.type }}</td>
+            <td class="font-semibold">{{ formatAmount(tx.amount) }}</td>
+            <td class="text-sm">{{ tx.pay_method?.replace('_',' ') }}</td>
+            <td><span class="badge" [ngClass]="statusClass(tx.status)">{{ tx.status }}</span></td>
+            <td class="text-xs text-muted">{{ tx.created_at | date:'dd/MM/yy HH:mm' }}</td>
+          </tr>
+          }
+          @if (!txs().length) {
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">Aucune transaction</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages > 1) {
+    <div class="pagination">
+      <button class="btn btn-ghost btn-sm" [disabled]="page() === 1" (click)="prevPage()">
+        <mat-icon>chevron_left</mat-icon> Précédent
+      </button>
+      <span class="text-sm text-muted">Page {{ page() }} / {{ totalPages }}</span>
+      <button class="btn btn-ghost btn-sm" [disabled]="page() === totalPages" (click)="nextPage()">
+        Suivant <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+  }
+
+</div>

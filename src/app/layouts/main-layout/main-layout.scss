@@ -1,0 +1,34 @@
+.app-shell {
+  display: flex;
+  min-height: calc(100vh - var(--navbar-h));
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: var(--navbar-h) 0 0 0;
+  background: rgba(26,32,53,.55);
+  z-index: 89;
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-w);
+  min-height: calc(100vh - var(--navbar-h));
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay { display: block; }
+  .main-content { margin-left: 0; }
+}
