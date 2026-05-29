@@ -25,7 +25,7 @@ export class OnboardingComponent {
   loading  = signal(false);
   errorMsg = signal('');
   showPwd  = signal(false);
-  kycStep3Preview = signal<{doc?: string, back?: string, selfie?: string}>({});
+  kycStep3Preview = signal<{document?: string, back?: string, selfie?: string}>({});
 
   kycFiles: KycFiles = { document: null, back: null, selfie: null };
 
@@ -61,7 +61,7 @@ export class OnboardingComponent {
   selectedDocType = signal('national_id');
 
   // Step 3 validation
-  step3Valid = computed(() => !!this.kycFiles.document);
+  step3Valid = computed(() => !!this.kycStep3Preview().document);
 
   // Step 5
   riskProfiles = [
@@ -174,7 +174,12 @@ export class OnboardingComponent {
     this.errorMsg.set('');
 
     this.auth.registerStep5(this.auth.getPendingUUID() ?? '', this.selectedRisk()).subscribe({
-      next: () => { this.loading.set(false); this.router.navigate(['/dashboard']); },
+      next: () => {
+        this.auth.fetchMe().subscribe({
+          next: () => { this.loading.set(false); this.router.navigate(['/dashboard']); },
+          error: () => { this.loading.set(false); this.router.navigate(['/dashboard']); }
+        });
+      },
       error: err => {
         this.errorMsg.set(err.error?.message || 'Erreur lors de la sauvegarde du profil.');
         this.loading.set(false);

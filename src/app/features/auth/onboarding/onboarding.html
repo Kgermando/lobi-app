@@ -183,15 +183,15 @@
         <div class="upload-zone" [class.has-file]="kycFiles.document">
           <input type="file" id="doc-front" accept=".jpg,.jpeg,.png,.pdf" (change)="onFileChange($event, 'document')"/>
           <label for="doc-front" class="upload-label">
-            @if (!kycStep3Preview().doc) {
+            @if (!kycStep3Preview().document) {
             <div>
               <div class="upload-icon"><mat-icon>description</mat-icon></div>
               <p class="upload-title">Recto du document *</p>
               <p class="upload-hint">JPG, PNG ou PDF – max 10MB</p>
             </div>
             }
-            @if (kycStep3Preview().doc) {
-            <img [src]="kycStep3Preview().doc" class="upload-preview" alt="preview"/>
+            @if (kycStep3Preview().document) {
+            <img [src]="kycStep3Preview().document" class="upload-preview" alt="preview"/>
             }
           </label>
         </div>
