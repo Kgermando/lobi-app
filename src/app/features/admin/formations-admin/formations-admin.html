@@ -1,0 +1,293 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Formations</h1>
+      <p class="page-subtitle text-muted">Vidéos YouTube et mentors pour les adhérents LOBI</p>
+    </div>
+  </div>
+
+  <div class="tabs-bar">
+    <button class="tab-btn" [class.active]="activeTab() === 'formations'" (click)="setTab('formations')">
+      <mat-icon>play_circle</mat-icon> Formations
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'mentors'" (click)="setTab('mentors')">
+      <mat-icon>person</mat-icon> Mentors
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'citations'" (click)="setTab('citations')">
+      <mat-icon>format_quote</mat-icon> Citations
+    </button>
+  </div>
+
+  <!-- ═══ FORMATIONS TAB ═══ -->
+  @if (activeTab() === 'formations') {
+  <div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+      <button class="btn btn-primary btn-sm" (click)="openCreate()" [disabled]="!mentors().length">
+        <mat-icon>add</mat-icon> Nouvelle formation
+      </button>
+    </div>
+
+    @if (!mentors().length) {
+      <p class="text-sm text-muted mb-3">Créez d'abord un mentor avant d'ajouter une formation.</p>
+    }
+
+    @if (showForm()) {
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="card-title">{{ editingId() ? 'Modifier' : 'Créer' }} une formation</h3>
+        <button class="btn-icon" (click)="showForm.set(false)"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="form-group">
+            <label class="form-label">Titre *</label>
+            <input type="text" formControlName="title" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description *</label>
+            <textarea formControlName="description" class="form-control" rows="4"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">URL YouTube *</label>
+              <input type="url" formControlName="video_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..."/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Catégorie *</label>
+              <select formControlName="category" class="form-select">
+                @for (c of categories; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Mentor *</label>
+              <select formControlName="mentor_id" class="form-select">
+                <option value="">Sélectionner…</option>
+                @for (m of mentors(); track m.id) {
+                  <option [value]="m.id">{{ m.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Statut *</label>
+              <select formControlName="status" class="form-select">
+                <option value="public">Public</option>
+                <option value="private">Privé</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image de couverture {{ editingId() ? '' : '*' }}</label>
+            <input type="file" accept="image/*" class="form-control" (change)="onCoverChange($event)"/>
+          </div>
+
+          @if (errorMsg()) { <p class="form-error">{{ errorMsg() }}</p> }
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="showForm.set(false)">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="uploading() || form.invalid">
+              {{ uploading() ? 'Envoi…' : (editingId() ? 'Enregistrer' : 'Créer') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    }
+
+    @if (loading()) {
+      <div class="skeleton-block" style="height:200px"></div>
+    }
+
+    @if (!loading()) {
+    <div class="lobi-table-wrap">
+      <table class="lobi-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Titre</th>
+            <th>Catégorie</th>
+            <th>Mentor</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of formations(); track f.id) {
+          <tr>
+            <td>
+              @if (f.image_url) { <img [src]="f.image_url" [alt]="f.title" class="thumb"/> }
+              @else { <span class="text-muted">—</span> }
+            </td>
+            <td class="font-medium">{{ f.title }}</td>
+            <td><span class="badge badge-secondary">{{ f.category || '—' }}</span></td>
+            <td class="text-sm">{{ f.mentor?.name || '—' }}</td>
+            <td>
+              @if (f.status === 'public') { <span class="badge badge-green">Public</span> }
+              @else { <span class="badge badge-secondary">Privé</span> }
+            </td>
+            <td class="text-sm">{{ f.created_at | date:'dd/MM/yyyy' }}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" (click)="openEdit(f)" title="Modifier"><mat-icon>edit</mat-icon></button>
+              <button class="btn-icon danger" (click)="delete(f.id)" title="Supprimer"><mat-icon>delete</mat-icon></button>
+            </td>
+          </tr>
+          }
+          @if (!formations().length) {
+          <tr><td colspan="7" class="text-center text-muted py-4">Aucune formation</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- ═══ MENTORS TAB ═══ -->
+  @if (activeTab() === 'mentors') {
+  <div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+      <button class="btn btn-primary btn-sm" (click)="openCreateMentor()">
+        <mat-icon>add</mat-icon> Nouveau mentor
+      </button>
+    </div>
+
+    @if (showMentorForm()) {
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="card-title">{{ editingMentorId() ? 'Modifier' : 'Créer' }} un mentor</h3>
+        <button class="btn-icon" (click)="showMentorForm.set(false)"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="mentorForm" (ngSubmit)="submitMentor()" novalidate>
+          <div class="form-group">
+            <label class="form-label">Nom *</label>
+            <input type="text" formControlName="name" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description *</label>
+            <textarea formControlName="description" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Photo {{ editingMentorId() ? '' : '*' }}</label>
+            <input type="file" accept="image/*" class="form-control" (change)="onMentorImage($event)"/>
+          </div>
+          @if (mentorError()) { <p class="form-error">{{ mentorError() }}</p> }
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="showMentorForm.set(false)">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="uploading() || mentorForm.invalid">
+              {{ uploading() ? 'Envoi…' : (editingMentorId() ? 'Enregistrer' : 'Créer') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    }
+
+    <div class="lobi-table-wrap">
+      <table class="lobi-table">
+        <thead>
+          <tr><th>Photo</th><th>Nom</th><th>Description</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (m of mentors(); track m.id) {
+          <tr>
+            <td>
+              @if (m.image_url) { <img [src]="m.image_url" [alt]="m.name" class="thumb round"/> }
+            </td>
+            <td class="font-medium">{{ m.name }}</td>
+            <td class="text-sm text-muted">{{ m.description }}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" (click)="openCreateCitation(m.id)" title="Ajouter une citation"><mat-icon>format_quote</mat-icon></button>
+              <button class="btn-icon" (click)="openEditMentor(m)" title="Modifier"><mat-icon>edit</mat-icon></button>
+              <button class="btn-icon danger" (click)="deleteMentor(m.id)" title="Supprimer"><mat-icon>delete</mat-icon></button>
+            </td>
+          </tr>
+          }
+          @if (!mentors().length) {
+          <tr><td colspan="4" class="text-center text-muted py-4">Aucun mentor</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+
+  <!-- ═══ CITATIONS TAB ═══ -->
+  @if (activeTab() === 'citations') {
+  <div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+      <button class="btn btn-primary btn-sm" (click)="openCreateCitation()" [disabled]="!mentors().length">
+        <mat-icon>add</mat-icon> Nouvelle citation
+      </button>
+    </div>
+
+    @if (!mentors().length) {
+      <p class="text-sm text-muted mb-3">Créez d'abord un mentor pour publier des citations.</p>
+    }
+
+    @if (showCitationForm()) {
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3 class="card-title">{{ editingMotivationId() ? 'Modifier' : 'Publier' }} une citation</h3>
+        <button class="btn-icon" (click)="showCitationForm.set(false)"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="citationForm" (ngSubmit)="submitCitation()" novalidate>
+          <div class="form-group">
+            <label class="form-label">Mentor *</label>
+            <select formControlName="mentor_id" class="form-select" [disabled]="!!editingMotivationId()">
+              <option value="">Sélectionner…</option>
+              @for (m of mentors(); track m.id) {
+                <option [value]="m.id">{{ m.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Citation *</label>
+            <textarea formControlName="citation" class="form-control" rows="4"
+              placeholder="Ex: L'épargne d'aujourd'hui est la liberté de demain."></textarea>
+          </div>
+          @if (citationError()) { <p class="form-error">{{ citationError() }}</p> }
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="showCitationForm.set(false)">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="uploading() || citationForm.invalid">
+              {{ uploading() ? 'Envoi…' : (editingMotivationId() ? 'Enregistrer' : 'Publier') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    }
+
+    <div class="lobi-table-wrap">
+      <table class="lobi-table">
+        <thead>
+          <tr><th>Mentor</th><th>Citation</th><th>Date</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (c of motivations(); track c.id) {
+          <tr>
+            <td class="font-medium">{{ c.mentor?.name || '—' }}</td>
+            <td class="text-sm citation-cell">« {{ c.citation }} »</td>
+            <td class="text-sm">{{ c.created_at | date:'dd/MM/yyyy' }}</td>
+            <td class="actions-cell">
+              <button class="btn-icon" (click)="openEditCitation(c)"><mat-icon>edit</mat-icon></button>
+              <button class="btn-icon danger" (click)="deleteCitation(c)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </tr>
+          }
+          @if (!motivations().length) {
+          <tr><td colspan="4" class="text-center text-muted py-4">Aucune citation</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+
+</div>

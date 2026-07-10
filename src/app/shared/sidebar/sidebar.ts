@@ -29,9 +29,10 @@ export class SidebarComponent {
 
   userNav: NavItem[] = [
     { label: 'Tableau de bord', icon: 'home',                   route: '/dashboard' },
-    { label: 'Mon Wallet',      icon: 'account_balance_wallet', route: '/wallet' },
-    { label: 'Mes Poches',      icon: 'show_chart',             route: '/pockets' },
-    { label: 'Communauté',      icon: 'groups',                 route: '/community' }, 
+    { label: 'Mon épargne',     icon: 'savings',                route: '/wallet' },
+    { label: 'Mes projets',     icon: 'rocket_launch',          route: '/pockets' },
+    { label: 'Formations',      icon: 'play_circle',            route: '/formations' },
+    { label: 'Communauté',      icon: 'groups',                 route: '/community' },
   ];
 
   adminNav: NavItem[] = [
@@ -41,6 +42,8 @@ export class SidebarComponent {
     { label: 'Investissements',  icon: 'trending_up',         route: '/admin/investments' },
     { label: 'Analytics',        icon: 'analytics',           route: '/admin/analytics' },
     { label: 'Communauté',       icon: 'school',              route: '/admin/community' },
+    { label: 'Activités',        icon: 'event',               route: '/admin/activities' },
+    { label: 'Formations',       icon: 'play_circle',         route: '/admin/formations' },
   ];
 
   get navItems() {

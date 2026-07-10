@@ -54,7 +54,13 @@
             </td>
             <td class="text-sm">{{ u.telephone || '—' }}</td>
             <td class="text-sm">{{ u.ville || '—' }}</td>
-            <td><span class="badge" [ngClass]="roleClass(u.role)">{{ u.role }}</span></td>
+            <td>
+              <select class="form-select form-select-sm role-select" [value]="u.role === 'user' || u.role === 'superadmin' ? (u.role === 'superadmin' ? 'admin' : 'apprenant') : u.role" (change)="changeRole(u.uuid, $event)">
+                @for (r of roles; track r.value) {
+                  <option [value]="r.value" [selected]="(u.role === 'user' ? 'apprenant' : u.role === 'superadmin' ? 'admin' : u.role) === r.value">{{ r.label }}</option>
+                }
+              </select>
+            </td>
             <td class="text-sm text-center">{{ u.onboarding_step }} / 5</td>
             <td class="text-xs text-muted">{{ u.created_at | date:'dd/MM/yyyy' }}</td>
             <td>

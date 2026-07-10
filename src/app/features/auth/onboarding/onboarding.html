@@ -34,8 +34,8 @@
     @if (step() === 1) {
     <div class="ob-section fade-in">
       <div class="ob-section-header">
-        <h2 class="font-display text-2xl font-bold">Créer votre compte</h2>
-        <p class="text-muted">Rapide – ça prend moins de 30 secondes</p>
+        <h2 class="font-display text-2xl font-bold">Rejoindre le programme LOBI</h2>
+        <p class="text-muted">Créez votre compte adhérent — épargne stratégique et accompagnement entrepreneurial</p>
       </div>
 
       <form [formGroup]="step1Form" (ngSubmit)="submitStep1()" novalidate>
@@ -84,7 +84,7 @@
     <div class="ob-section fade-in">
       <div class="ob-section-header">
         <h2 class="font-display text-2xl font-bold">Qui êtes-vous ?</h2>
-        <p class="text-muted">Quelques informations pour personnaliser votre expérience</p>
+        <p class="text-muted">Profil adhérent LOBI — étudiant(e) ou jeune entrepreneur</p>
       </div>
 
       <form [formGroup]="step2Form" (ngSubmit)="submitStep2()" novalidate>
@@ -141,6 +141,19 @@
           <div class="form-group">
             <label class="form-label">Pays</label>
             <input type="text" formControlName="pays" class="form-control"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Université / Institution</label>
+            <input type="text" formControlName="nom_universite" class="form-control"
+                   placeholder="Ex. UNIKIN, UPC..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type de projet entrepreneurial</label>
+            <input type="text" formControlName="type_projet" class="form-control"
+                   placeholder="Ex. Tech, Agribusiness, Commerce..."/>
           </div>
         </div>
 

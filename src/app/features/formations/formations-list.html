@@ -1,0 +1,191 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Formations</h1>
+      <p class="page-subtitle text-muted">Suivez des mentors pour recevoir des suggestions personnalisées</p>
+    </div>
+  </div>
+
+  <div class="tabs-pills">
+    <button class="tab-pill" [class.active]="activeTab() === 'suggested'" (click)="activeTab.set('suggested')">
+      <mat-icon>auto_awesome</mat-icon> Pour vous
+      <span class="pill-count">{{ suggested().length }}</span>
+    </button>
+    <button class="tab-pill" [class.active]="activeTab() === 'all'" (click)="activeTab.set('all')">
+      <mat-icon>play_circle</mat-icon> Toutes
+      <span class="pill-count">{{ formations().length }}</span>
+    </button>
+    <button class="tab-pill" [class.active]="activeTab() === 'mentors'" (click)="activeTab.set('mentors')">
+      <mat-icon>person</mat-icon> Mentors
+      <span class="pill-count">{{ mentors().length }}</span>
+    </button>
+    <button class="tab-pill" [class.active]="activeTab() === 'citations'" (click)="activeTab.set('citations')">
+      <mat-icon>format_quote</mat-icon> Citations
+      <span class="pill-count">{{ motivations().length }}</span>
+    </button>
+  </div>
+
+  <!-- ═══ SUGGESTED ═══ -->
+  @if (activeTab() === 'suggested') {
+    @if (loading()) {
+      <div class="formations-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton" style="height:160px;margin-bottom:12px"></div>
+            <div class="skeleton" style="height:18px;width:70%"></div>
+          </div>
+        }
+      </div>
+    } @else if (!suggested().length) {
+      <div class="empty-state">
+        <mat-icon>auto_awesome</mat-icon>
+        <p>Aucune suggestion pour le moment</p>
+        <p class="text-sm text-muted">Suivez des mentors pour voir leurs formations ici.</p>
+        <button class="btn btn-primary btn-sm mt-2" (click)="activeTab.set('mentors')">
+          Découvrir les mentors
+        </button>
+      </div>
+    } @else {
+      <div class="formations-grid">
+        @for (f of suggested(); track f.id) {
+          <a [routerLink]="['/formations', f.id]" class="formation-card card">
+            <div class="f-cover">
+              @if (f.image_url) { <img [src]="f.image_url" [alt]="f.title"/> }
+              @else { <div class="f-cover-ph"><mat-icon>play_circle</mat-icon></div> }
+              <span class="f-play"><mat-icon>play_arrow</mat-icon></span>
+              @if (f.category) { <span class="f-cat">{{ f.category }}</span> }
+            </div>
+            <div class="f-body">
+              <h3 class="f-title">{{ f.title }}</h3>
+              <p class="f-desc">{{ f.description }}</p>
+              @if (f.mentor) {
+                <div class="f-mentor">
+                  <img [src]="f.mentor.image_url" [alt]="f.mentor.name"/>
+                  <span>{{ f.mentor.name }}</span>
+                </div>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    }
+  }
+
+  <!-- ═══ ALL ═══ -->
+  @if (activeTab() === 'all') {
+    <div class="category-filter">
+      @for (c of categories; track c.value) {
+        <button class="filter-pill" [class.active]="category() === c.value" (click)="filter(c.value)">
+          {{ c.label }}
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="formations-grid">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton" style="height:160px;margin-bottom:12px"></div>
+            <div class="skeleton" style="height:18px;width:70%"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="formations-grid">
+        @for (f of formations(); track f.id) {
+          <a [routerLink]="['/formations', f.id]" class="formation-card card">
+            <div class="f-cover">
+              @if (f.image_url) { <img [src]="f.image_url" [alt]="f.title"/> }
+              @else { <div class="f-cover-ph"><mat-icon>play_circle</mat-icon></div> }
+              <span class="f-play"><mat-icon>play_arrow</mat-icon></span>
+              @if (f.category) { <span class="f-cat">{{ f.category }}</span> }
+            </div>
+            <div class="f-body">
+              <h3 class="f-title">{{ f.title }}</h3>
+              <p class="f-desc">{{ f.description }}</p>
+              @if (f.mentor) {
+                <div class="f-mentor">
+                  <img [src]="f.mentor.image_url" [alt]="f.mentor.name"/>
+                  <span>{{ f.mentor.name }}</span>
+                </div>
+              }
+            </div>
+          </a>
+        }
+      </div>
+      @if (!formations().length) {
+        <div class="empty-state">
+          <mat-icon>school</mat-icon>
+          <p>Aucune formation disponible</p>
+        </div>
+      }
+    }
+  }
+
+  <!-- ═══ MENTORS ═══ -->
+  @if (activeTab() === 'mentors') {
+    <div class="mentors-grid">
+      @for (m of mentors(); track m.id) {
+        <div class="mentor-card card">
+          <img class="m-avatar" [src]="m.image_url" [alt]="m.name"/>
+          <div class="m-body">
+            <h3 class="m-name">{{ m.name }}</h3>
+            <p class="m-desc">{{ m.description }}</p>
+            <button
+              class="btn btn-sm"
+              [class.btn-primary]="!m.followed"
+              [class.btn-outline]="m.followed"
+              [disabled]="followBusy() === m.id"
+              (click)="toggleFollow(m)">
+              @if (m.followed) {
+                <mat-icon>check</mat-icon> Suivi
+              } @else {
+                <mat-icon>person_add</mat-icon> Suivre
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+    @if (!mentors().length) {
+      <div class="empty-state">
+        <mat-icon>person_off</mat-icon>
+        <p>Aucun mentor disponible</p>
+      </div>
+    }
+  }
+
+  <!-- ═══ CITATIONS (feed abonnés) ═══ -->
+  @if (activeTab() === 'citations') {
+    @if (!motivations().length) {
+      <div class="empty-state">
+        <mat-icon>format_quote</mat-icon>
+        <p>Aucune citation pour le moment</p>
+        <p class="text-sm text-muted">Suivez des mentors pour voir leurs citations motivantes.</p>
+        <button class="btn btn-primary btn-sm mt-2" (click)="activeTab.set('mentors')">
+          Découvrir les mentors
+        </button>
+      </div>
+    } @else {
+      <div class="citations-feed">
+        @for (c of motivations(); track c.id) {
+          <blockquote class="citation-card card">
+            <mat-icon class="quote-ico">format_quote</mat-icon>
+            <p class="citation-text">« {{ c.citation }} »</p>
+            @if (c.mentor) {
+              <footer class="citation-author">
+                <img [src]="c.mentor.image_url" [alt]="c.mentor.name"/>
+                <div>
+                  <strong>{{ c.mentor.name }}</strong>
+                  <span>{{ c.created_at | date:'dd MMM yyyy' }}</span>
+                </div>
+              </footer>
+            }
+          </blockquote>
+        }
+      </div>
+    }
+  }
+
+</div>

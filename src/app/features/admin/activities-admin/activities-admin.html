@@ -1,0 +1,132 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Activités</h1>
+      <p class="page-subtitle text-muted">Événements et actions du programme LOBI</p>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="openCreate()">
+      <mat-icon>add</mat-icon> Nouvelle activité
+    </button>
+  </div>
+
+  @if (showForm()) {
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3 class="card-title">{{ editingId() ? 'Modifier' : 'Créer' }} une activité</h3>
+      <button class="btn-icon" (click)="showForm.set(false)"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-group">
+          <label class="form-label">Titre *</label>
+          <input type="text" formControlName="title" class="form-control" placeholder="Ex: Forum LOBI 2026"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Résumé *</label>
+          <input type="text" formControlName="resume" class="form-control" placeholder="Court résumé affiché sur la carte"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea formControlName="description" class="form-control" rows="4" placeholder="Description complète"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Image de couverture {{ editingId() ? '' : '*' }}</label>
+            <input type="file" accept="image/*" class="form-control" (change)="onCoverChange($event)"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Galerie (plusieurs images)</label>
+            <input type="file" accept="image/*" multiple class="form-control" (change)="onGalleryChange($event)"/>
+          </div>
+        </div>
+
+        <div class="participants-block">
+          <div class="participants-header">
+            <h4>Participants</h4>
+            <button type="button" class="btn btn-outline btn-sm" (click)="addParticipant()">
+              <mat-icon>add</mat-icon> Ajouter
+            </button>
+          </div>
+
+          @for (ctrl of participants.controls; track $index; let i = $index) {
+          <div class="participant-row" [formGroup]="$any(ctrl)">
+            <div class="form-group" style="flex:1">
+              <label class="form-label">Nom / titre</label>
+              <input type="text" formControlName="title" class="form-control" placeholder="Ex: Rawbank"/>
+            </div>
+            <div class="form-group" style="flex:1">
+              <label class="form-label">Logo {{ editingId() ? '(optionnel si inchangé)' : '*' }}</label>
+              <input type="file" accept="image/*" class="form-control" (change)="onParticipantLogo(i, $event)"/>
+            </div>
+            <button type="button" class="btn-icon danger" (click)="removeParticipant(i)" title="Retirer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          }
+        </div>
+
+        @if (errorMsg()) {
+          <p class="form-error">{{ errorMsg() }}</p>
+        }
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="showForm.set(false)">Annuler</button>
+          <button type="submit" class="btn btn-primary" [disabled]="uploading() || form.invalid">
+            {{ uploading() ? 'Envoi…' : (editingId() ? 'Enregistrer' : 'Créer') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (loading()) {
+    <div class="skeleton-block" style="height:200px"></div>
+  }
+
+  @if (!loading()) {
+  <div class="lobi-table-wrap">
+    <table class="lobi-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Titre</th>
+          <th>Résumé</th>
+          <th>Participants</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of activities(); track a.id) {
+        <tr>
+          <td>
+            @if (a.image_url) {
+              <img [src]="a.image_url" [alt]="a.title" class="thumb"/>
+            } @else {
+              <span class="text-muted">—</span>
+            }
+          </td>
+          <td class="font-medium">{{ a.title }}</td>
+          <td class="text-sm text-muted">{{ a.resume }}</td>
+          <td class="text-sm">{{ a.participants.length || 0 }}</td>
+          <td class="text-sm">{{ a.created_at | date:'dd/MM/yyyy' }}</td>
+          <td class="actions-cell">
+            <button class="btn-icon" (click)="openEdit(a)" title="Modifier"><mat-icon>edit</mat-icon></button>
+            <button class="btn-icon danger" (click)="delete(a.id)" title="Supprimer"><mat-icon>delete</mat-icon></button>
+          </td>
+        </tr>
+        }
+        @if (!activities().length) {
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">Aucune activité</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+
+</div>

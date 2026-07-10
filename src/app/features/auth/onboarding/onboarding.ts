@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth.service';
+import { RegisterStep2 } from '../../../core/models/user.model';
+import { environment } from '../../../../environments/environment';
 
 interface KycFiles { document: File | null; back: File | null; selfie: File | null; }
 
@@ -49,7 +51,9 @@ export class OnboardingComponent {
     date_naissance:['', Validators.required],
     tranche_age:   ['18-24'],
     ville:         ['', Validators.required],
-    pays:          ['RD Congo']
+    pays:          ['RD Congo'],
+    nom_universite:['', Validators.required],
+    type_projet:   ['', Validators.required],
   });
 
   trancheAges  = ['18-24', '25-30', '31-35', '36-40', '40+'];
@@ -114,9 +118,19 @@ export class OnboardingComponent {
     this.loading.set(true);
     this.errorMsg.set('');
 
-    const payload = { ...this.step2Form.value, user_uuid: this.auth.getPendingUUID() };
+    const payload: RegisterStep2 = {
+      user_uuid: this.auth.getPendingUUID() ?? '',
+      fullname: this.step2Form.value.fullname!,
+      telephone: this.step2Form.value.telephone!,
+      date_naissance: this.step2Form.value.date_naissance!,
+      tranche_age: this.step2Form.value.tranche_age!,
+      ville: this.step2Form.value.ville!,
+      pays: this.step2Form.value.pays ?? 'RD Congo',
+      nom_universite: this.step2Form.value.nom_universite!,
+      type_projet: this.step2Form.value.type_projet!,
+    };
 
-    this.auth.registerStep2(payload as any).subscribe({
+    this.auth.registerStep2(payload).subscribe({
       next: () => { this.loading.set(false); this.step.set(3); },
       error: err => {
         this.errorMsg.set(err.error?.message || 'Erreur lors de la mise à jour du profil.');
@@ -189,7 +203,7 @@ export class OnboardingComponent {
 
   // ──────────────────────────────────────────────────────────────────────────
   private getApiUrl(): string {
-    return (window as any).__env?.apiUrl ?? 'http://localhost:8000/api';
+    return environment.apiUrl;
   }
 
   get s1email()   { return this.step1Form.get('email')!; }

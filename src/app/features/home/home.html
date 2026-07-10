@@ -21,24 +21,24 @@
         </div> -->
 
         <h1 class="hero-title">
-          Préparer votre avenir avec<br>
-          <span class="hero-gradient">Lobi</span>
+          De l'étudiant au<br>
+          <span class="hero-gradient">créateur de richesse</span>
         </h1>
 
         <p class="hero-desc">
-          La plateforme d'investissement participatif qui connecte les jeunes
-          entrepreneurs congolais à des réseaux à fort rendement.
-          Commencez avec <strong>5 000 CDF</strong> — en 2 minutes.
+          Programme panafricain né en RDC — <strong>Assurons l'avenir</strong>.
+          Épargne stratégique, fonds de garantie, formations et mentorat
+          pour lancer votre entreprise. Commencez dès <strong>5 000 CDF</strong>.
         </p>
 
         <div class="hero-actions">
           <a routerLink="/auth/register" class="btn-cta">
-            Commencer gratuitement
+            Rejoindre le programme
             <mat-icon>arrow_forward</mat-icon>
           </a>
-          <a href="#comment" class="btn-ghost">
-            <mat-icon>play_circle</mat-icon>
-            Comment ca marche
+          <a href="#programme" class="btn-ghost">
+            <mat-icon>info</mat-icon>
+            Découvrir LOBI
           </a>
         </div>
 
@@ -168,6 +168,52 @@
 }
 
 <!-- ══════════════════════════════════════════════════════
+     PROGRAMME LOBI — Qui sommes-nous
+══════════════════════════════════════════════════════ -->
+<section id="programme" class="about-section">
+  <div class="container">
+    <div class="about-grid reveal">
+      <div class="about-copy">
+        <span class="stag">Qui sommes-nous</span>
+        <h2 class="stitle left">{{ programIntro.title }}</h2>
+        @for (p of programIntro.paragraphs; track p) {
+          <p class="about-p">{{ p }}</p>
+        }
+        <a routerLink="/auth/register" class="btn-cta mt-6">
+          Devenir adhérent
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+      <div class="about-visual">
+        <img src="/images/logo.png" alt="LOBI — Assurons l'avenir" class="about-logo"/>
+        <p class="about-tagline">Assurons l'avenir</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PROBLÉMATIQUE / CONSTAT
+══════════════════════════════════════════════════════ -->
+<section class="problem-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Constat</span>
+      <h2 class="stitle">Pourquoi LOBI existe</h2>
+      <p class="ssub">« Dévons-nous laisser cette situation continuer à détruire des vies ? » — <strong>Nous disons non.</strong></p>
+    </div>
+    <div class="problem-grid">
+      @for (item of problematics; track item; let i = $index) {
+        <div class="problem-card reveal" [style.transition-delay]="(i * 0.08) + 's'">
+          <mat-icon>report_problem</mat-icon>
+          <p>{{ item }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
      METRICS
 ══════════════════════════════════════════════════════ -->
 <section class="metrics-section">
@@ -190,14 +236,39 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════
-     FEATURES BENTO
+     AVANTAGES DU PROGRAMME
 ══════════════════════════════════════════════════════ -->
 <section class="bento-section">
   <div class="container">
     <div class="section-header reveal">
-      <span class="stag">Pourquoi Lobi</span>
-      <h2 class="stitle">Concu pour<br>l'investisseur congolais moderne</h2>
-      <p class="ssub">Tout ce qu'il vous faut pour faire fructifier votre argent intelligemment, en un seul endroit.</p>
+      <span class="stag">Impact</span>
+      <h2 class="stitle">Avantages du programme</h2>
+      <p class="ssub">LOBI est un levier de développement économique et un projet à impact visible pour la jeunesse congolaise.</p>
+    </div>
+
+    <div class="advantages-grid">
+      @for (a of advantages; track a.title; let i = $index) {
+        <div class="adv-card reveal" [style.transition-delay]="(i * 0.08) + 's'">
+          <div class="adv-icon" [class]="'adv-icon-' + a.color">
+            <mat-icon>{{ a.icon }}</mat-icon>
+          </div>
+          <h3 class="adv-title">{{ a.title }}</h3>
+          <p class="adv-desc">{{ a.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FEATURES BENTO (outil numérique)
+══════════════════════════════════════════════════════ -->
+<section class="bento-section bento-section-alt">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Plateforme</span>
+      <h2 class="stitle">Votre espace adhérent LOBI</h2>
+      <p class="ssub">Wallet, épargne, investissements et communauté — tout pour accompagner votre parcours entrepreneurial.</p>
     </div>
 
     <div class="bento-grid">
@@ -248,8 +319,8 @@
         <div class="bc-icon-wrap bc-icon-teal">
           <mat-icon>groups</mat-icon>
         </div>
-        <h3 class="bc-title">Communaute active</h3>
-        <p class="bc-desc">Forums, webinars exclusifs et mentors pour accelerer votre parcours.</p>
+        <h3 class="bc-title">Communauté & mentorat</h3>
+        <p class="bc-desc">Forums, webinars exclusifs et mentors pour accélérer votre réussite entrepreneuriale.</p>
         <div class="bc-avatars">
           @for (t of testimonials; track t.name) {
             <div class="bca-av" [class]="'pav-' + t.color">{{ t.initials }}</div>
@@ -263,8 +334,8 @@
         <div class="bc-icon-wrap bc-icon-gold">
           <mat-icon>account_balance_wallet</mat-icon>
         </div>
-        <h3 class="bc-title">Wallet & Dashboard integres</h3>
-        <p class="bc-desc">Gerez depots, retraits et investissements depuis une interface mobile-first ultra simple.</p>
+        <h3 class="bc-title">Épargne & Wallet intégrés</h3>
+        <p class="bc-desc">Gérez votre épargne stratégique, dépôts Mobile Money et accès au fonds de garantie.</p>
         <div class="bc-tx-list">
           <div class="bctx">
             <div class="bctx-ic bctx-ic-green"><mat-icon>arrow_downward</mat-icon></div>
@@ -312,9 +383,9 @@
 <section id="comment" class="how-section">
   <div class="container">
     <div class="section-header reveal">
-      <span class="stag">Simple & rapide</span>
-      <h2 class="stitle">De zero a investisseur<br>en 3 etapes</h2>
-      <p class="ssub">Inscription, verification d'identite, premier investissement — moins de 10 minutes.</p>
+      <span class="stag">Parcours adhérent</span>
+      <h2 class="stitle">Comment rejoindre LOBI<br>en 3 étapes</h2>
+      <p class="ssub">Inscription, épargne stratégique et lancement de projet — avec accompagnement dédié.</p>
     </div>
 
     <div class="how-grid">
@@ -350,9 +421,9 @@
 <section id="reseaux" class="networks-section">
   <div class="container">
     <div class="section-header reveal">
-      <span class="stag">Opportunites</span>
-      <h2 class="stitle">Choisissez votre reseau</h2>
-      <p class="ssub">Des reseaux transparents, soigneusement selectionnes, a fort rendement en RDC.</p>
+      <span class="stag">Orientation</span>
+      <h2 class="stitle">Investissements rentables</h2>
+      <p class="ssub">Des réseaux d'épargne et d'investissement sélectionnés pour accompagner vos projets.</p>
     </div>
 
     @if (loading()) {
@@ -443,6 +514,100 @@
     }
   </div>
 </section>
+
+<!-- ══════════════════════════════════════════════════════
+     CMS ACTIVITIES
+══════════════════════════════════════════════════════ -->
+@if (cmsActivities().length > 0 || loading()) {
+<section id="activites" class="cms-activities-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="stag">Programme</span>
+      <h2 class="stitle">Nos activités</h2>
+      <p class="ssub">Découvrez les actions, forums et initiatives du programme LOBI.</p>
+    </div>
+
+    @if (loading()) {
+      <div class="cms-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="cms-card skeleton-card">
+            <div class="skeleton" style="height:180px;border-radius:8px;margin-bottom:12px"></div>
+            <div class="skeleton" style="height:20px;border-radius:4px;margin-bottom:8px"></div>
+            <div class="skeleton" style="height:40px;border-radius:4px"></div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading()) {
+      <div class="cms-grid">
+        @for (a of cmsActivities(); track a.id; let i = $index) {
+          <article class="cms-card reveal" [style.transition-delay]="(i * 0.1) + 's'" (click)="openCmsActivity(a)">
+            <div class="cms-cover">
+              <img [src]="a.image_url" [alt]="a.title" loading="lazy"/>
+            </div>
+            <div class="cms-body">
+              <h3 class="cms-title">{{ a.title }}</h3>
+              <p class="cms-resume">{{ a.resume }}</p>
+              @if (a.participants.length) {
+                <div class="cms-participants">
+                  @for (p of a.participants.slice(0, 4); track p.id) {
+                    <img [src]="p.logo_url" [alt]="p.title" [title]="p.title" class="cms-p-logo"/>
+                  }
+                  @if (a.participants.length > 4) {
+                    <span class="cms-p-more">+{{ a.participants.length - 4 }}</span>
+                  }
+                </div>
+              }
+              <span class="cms-link">
+                En savoir plus <mat-icon>arrow_forward</mat-icon>
+              </span>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+}
+
+@if (selectedActivity(); as act) {
+<div class="cms-modal-backdrop" (click)="closeCmsActivity()">
+  <div class="cms-modal" (click)="$event.stopPropagation()">
+    <button class="cms-modal-close" (click)="closeCmsActivity()" aria-label="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="cms-modal-cover">
+      <img [src]="act.image_url" [alt]="act.title"/>
+    </div>
+    <div class="cms-modal-body">
+      <h2>{{ act.title }}</h2>
+      <p class="cms-modal-resume">{{ act.resume }}</p>
+      <p class="cms-modal-desc">{{ act.description }}</p>
+
+      @if (act.images.length) {
+        <div class="cms-gallery">
+          @for (img of act.images; track img) {
+            <img [src]="img" [alt]="act.title" loading="lazy"/>
+          }
+        </div>
+      }
+
+      @if (act.participants.length) {
+        <h3 class="cms-modal-sub">Participants</h3>
+        <div class="cms-modal-participants">
+          @for (p of act.participants; track p.id) {
+            <div class="cms-mp">
+              <img [src]="p.logo_url" [alt]="p.title"/>
+              <span>{{ p.title }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+}
 
 <!-- ══════════════════════════════════════════════════════
      LIVE ACTIVITY SPLIT
@@ -561,8 +726,8 @@
         <span class="stag stag-light">Commencez aujourd'hui</span>
         <h2 class="cta-title">Assurons l'avenir, ensemble.</h2>
         <p class="cta-sub">
-          Rejoignez 2 500+ investisseurs congolais qui batissent leur richesse sur Lobi.<br>
-          Inscription gratuite · KYC rapide · Investissement des 5 000 CDF
+          Rejoignez le programme LOBI et transformez votre épargne en autonomie financière.<br>
+          Inscription gratuite · KYC · Épargne dès 5 000 CDF · Mentorat inclus
         </p>
         <div class="cta-actions">
           <a routerLink="/auth/register" class="btn-cta-white">
@@ -592,7 +757,7 @@
       </div>
       <p class="footer-tagline">Assurons l'avenir</p>
       <p class="footer-desc">
-        La plateforme d'investissement participatif dediee aux jeunes entrepreneurs congolais.
+        Programme panafricain d'épargne stratégique et d'accompagnement entrepreneurial pour la jeunesse congolaise.
       </p>
       <div class="footer-social">
         <a href="#" class="fsoc" aria-label="Twitter"><mat-icon>alternate_email</mat-icon></a>
@@ -607,6 +772,7 @@
         <a routerLink="/auth/register">Creer un compte</a>
         <a routerLink="/auth/login">Se connecter</a>
         <a href="#reseaux">Reseaux</a>
+        <a href="#activites">Activites</a>
         <a href="#comment">Comment ca marche</a>
       </div>
       <div class="footer-col">

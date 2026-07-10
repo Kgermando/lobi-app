@@ -44,11 +44,37 @@ export class MembersComponent implements OnInit {
     this.svc.toggleStatus(uuid).subscribe(() => this.load());
   }
 
+  roles = [
+    { value: 'apprenant', label: 'Apprenant' },
+    { value: 'mentor', label: 'Mentor' },
+    { value: 'admin', label: 'Admin' },
+    { value: 'partenaire', label: 'Partenaire' },
+  ];
+
+  changeRole(uuid: string, e: Event) {
+    const role = (e.target as HTMLSelectElement).value;
+    this.svc.updateUserRole(uuid, role).subscribe(() => this.load());
+  }
+
   get totalPages() { return Math.ceil(this.total() / this.limit); }
   prevPage() { if (this.page() > 1) { this.page.update(p => p - 1); this.load(); } }
   nextPage() { if (this.page() < this.totalPages) { this.page.update(p => p + 1); this.load(); } }
 
   roleClass(role: string) {
-    return { superadmin: 'badge-gold', admin: 'badge-primary', user: 'badge-secondary' }[role] ?? 'badge-secondary';
+    return {
+      superadmin: 'badge-gold',
+      admin: 'badge-primary',
+      mentor: 'badge-green',
+      partenaire: 'badge-gold',
+      apprenant: 'badge-secondary',
+      user: 'badge-secondary',
+    }[role] ?? 'badge-secondary';
+  }
+
+  roleLabel(role: string) {
+    return {
+      apprenant: 'Apprenant', mentor: 'Mentor', admin: 'Admin',
+      partenaire: 'Partenaire', superadmin: 'Admin', user: 'Apprenant',
+    }[role] ?? role;
   }
 }

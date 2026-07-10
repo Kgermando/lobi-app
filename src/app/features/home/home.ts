@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { NavbarComponent } from '../../shared/navbar/navbar';
 import { HomeService } from '../../core/services/home.service';
 import { HomeActivity, HomeNetwork, HomeWebinar } from '../../core/models/home.model';
+import { Activity } from '../../core/models/activity.model';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   networks  = signal<HomeNetwork[]>([]);
   events    = signal<HomeWebinar[]>([]);
   activities = signal<HomeActivity[]>([]);
+  cmsActivities = signal<Activity[]>([]);
+  selectedActivity = signal<Activity | null>(null);
 
   // Static — testimonials & steps don't come from an API
   testimonials = [
@@ -43,16 +46,40 @@ export class HomeComponent implements OnInit, OnDestroy {
   ];
 
   steps = [
-    { step: '01', title: 'Créez votre compte', description: 'Inscrivez-vous en 2 minutes, complétez votre KYC et activez votre wallet sécurisé.', icon: 'person_add', color: 'primary' },
-    { step: '02', title: 'Choisissez un réseau', description: 'Parcourez nos réseaux d\'investissement soigneusement sélectionnés selon votre profil de risque.', icon: 'search', color: 'secondary' },
-    { step: '03', title: 'Investissez & gagnez', description: 'Investissez, suivez vos retours en temps réel depuis votre dashboard et réinvestissez vos gains.', icon: 'trending_up', color: 'green' }
+    { step: '01', title: 'Rejoignez le programme', description: 'Créez votre compte adhérent, complétez votre profil étudiant et activez votre épargne stratégique.', icon: 'person_add', color: 'primary' },
+    { step: '02', title: 'Épargnez consciencieusement', description: 'Constituez votre capital via Mobile Money et accédez au fonds de garantie pour vos projets.', icon: 'savings', color: 'secondary' },
+    { step: '03', title: 'Lancez votre entreprise', description: 'Bénéficiez de formations, du mentorat et d\'orientations vers des investissements rentables.', icon: 'rocket_launch', color: 'green' }
+  ];
+
+  programIntro = {
+    title: 'C\'est quoi le programme LOBI ?',
+    paragraphs: [
+      'Le programme LOBI est une initiative panafricaine née en République Démocratique du Congo, visant à briser le cycle du chômage post-universitaire et à contribuer au développement économique en transformant les étudiant(e)s de demandeurs d\'emploi en créateurs de richesse.',
+      'LOBI instaure un système d\'épargne stratégique et consciencieuse. Ce levier de développement vise l\'autonomie financière des jeunes via la création d\'entreprises stables, avec un accompagnement technique, pratique et dédié pour la réussite entrepreneuriale.'
+    ]
+  };
+
+  problematics = [
+    'Les parents congolais investissent massivement dans les études de leurs enfants en espérant des emplois stables — devenus très difficiles à obtenir.',
+    'La Banque Africaine de Développement estime que plus de 56 % des Congolais sont en sous-emploi.',
+    'Faute d\'opportunités, une grande majorité de jeunes diplômés se retrouvent au chômage.',
+    'Nous avons le devoir de créer un autre chemin pour les générations futures.'
+  ];
+
+  advantages = [
+    { icon: 'work_off', title: 'Réduction du chômage', desc: 'Transformer les diplômés en entrepreneurs actifs et employeurs.', color: 'primary' },
+    { icon: 'groups', title: 'Création d\'emplois', desc: 'Chaque projet lancé génère des opportunités pour la communauté.', color: 'green' },
+    { icon: 'account_balance', title: 'Fonds de garantie', desc: 'Accès crédit, bourses d\'études et voyages d\'études via l\'épargne collective.', color: 'gold' },
+    { icon: 'school', title: 'Formations professionnelles', desc: 'Accès à des formations adaptées et orientées résultats.', color: 'teal' },
+    { icon: 'trending_up', title: 'Investissements rentables', desc: 'Orientation vers des placements et projets à fort impact.', color: 'coral' },
+    { icon: 'hub', title: 'Réseautage & mentorat', desc: 'Communauté active, webinars et accompagnement personnalisé.', color: 'secondary' }
   ];
 
   metrics = [
-    { label: 'Investisseurs actifs', value: 2500, display: '2 500+', icon: 'people', color: 'primary', suffix: '+' },
-    { label: 'Fonds levés', value: 850, display: '850M CDF', icon: 'account_balance', color: 'teal', suffix: 'M' },
-    { label: 'Réseaux d\'investissement', value: 12, display: '12', icon: 'hub', color: 'green', suffix: '' },
-    { label: 'Rendement moyen / mois', value: 18, display: '18%', icon: 'trending_up', color: 'gold', suffix: '%' },
+    { label: 'Adhérents actifs', value: 2500, display: '2 500+', icon: 'people', color: 'primary', suffix: '+' },
+    { label: 'Épargne mobilisée', value: 850, display: '850M CDF', icon: 'savings', color: 'teal', suffix: 'M' },
+    { label: 'Projets accompagnés', value: 12, display: '12', icon: 'rocket_launch', color: 'green', suffix: '' },
+    { label: 'Taux de mentorat', value: 100, display: '100%', icon: 'supervisor_account', color: 'gold', suffix: '%' },
   ];
 
   constructor(private svc: HomeService) {
@@ -70,7 +97,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.events.set(res.events.data ?? []);
         this.activities.set(res.activities.data ?? []);
         this.loading.set(false);
-        // Start animations after data lands
         setTimeout(() => {
           this.initScrollAnimations();
           this.initCounters();
@@ -80,6 +106,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loading.set(false);
         setTimeout(() => { this.initScrollAnimations(); this.initCounters(); }, 80);
       }
+    });
+
+    this.svc.getCmsActivities().subscribe({
+      next: (res) => this.cmsActivities.set(res.data ?? []),
+      error: () => this.cmsActivities.set([]),
     });
   }
 
@@ -154,6 +185,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       withdrawal: 'withdraw'
     };
     return map[type] ?? 'invest';
+  }
+
+  openCmsActivity(a: Activity) {
+    this.selectedActivity.set(a);
+  }
+
+  closeCmsActivity() {
+    this.selectedActivity.set(null);
   }
 
   getProgressPercent(network: HomeNetwork): number {

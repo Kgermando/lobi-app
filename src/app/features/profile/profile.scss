@@ -145,3 +145,74 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.parcours-form {
+  padding: 1rem;
+  border: 1px solid var(--border-light, #e8ecf1);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .9rem;
+  margin: .5rem 0 1rem;
+  cursor: pointer;
+}
+
+.form-error {
+  color: var(--coral, #e05a4e);
+  font-size: .875rem;
+}
+
+.parcours-list {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.parcours-item {
+  display: flex;
+  gap: .875rem;
+  align-items: flex-start;
+  padding: .875rem;
+  border: 1px solid var(--border-light, #e8ecf1);
+  border-radius: 8px;
+}
+
+.parcours-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(26, 77, 143, .08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  mat-icon { color: var(--primary); }
+}
+
+.parcours-body {
+  flex: 1;
+  min-width: 0;
+  strong { display: inline; margin-right: .5rem; }
+  p { margin: .2rem 0 0; }
+}
+
+.parcours-actions {
+  display: flex;
+  gap: .15rem;
+}
+
+.btn-icon.danger mat-icon { color: var(--coral, #e05a4e); }
+
+.badge-sm { font-size: .65rem; padding: .15rem .4rem; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+  margin-top: .75rem;
+}

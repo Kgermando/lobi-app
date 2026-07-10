@@ -1,5 +1,5 @@
 import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners, isDevMode } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
+import { provideRouter, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { firstValueFrom } from 'rxjs';
@@ -16,7 +16,10 @@ function initAuth(auth: AuthService) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withViewTransitions()),
+    provideRouter(routes, withViewTransitions(), withInMemoryScrolling({
+      anchorScrolling: 'enabled',
+      scrollPositionRestoration: 'enabled',
+    })),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     { provide: APP_INITIALIZER, useFactory: initAuth, deps: [AuthService], multi: true }, provideServiceWorker('ngsw-worker.js', {

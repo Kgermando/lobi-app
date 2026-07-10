@@ -28,7 +28,7 @@
         <div class="photo-info">
           <h3 class="font-display text-lg font-bold">{{ user?.fullname || '—' }}</h3>
           <p class="text-sm text-muted">{{ user?.email }}</p>
-          <span class="badge badge-primary text-xs mt-1">{{ user?.role }}</span>
+          <span class="badge badge-primary text-xs mt-1">{{ roleLabel }}</span>
         </div>
 
         <!-- KYC status -->
@@ -123,6 +123,110 @@
         </div>
       </div>
 
+      <!-- Parcours d'études -->
+      <div class="card mt-4">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+          <h3 class="card-title">Parcours d'études</h3>
+          <button class="btn btn-primary btn-sm" type="button" (click)="openCreateParcours()">
+            <mat-icon>add</mat-icon> Ajouter
+          </button>
+        </div>
+        <div class="card-body">
+          @if (showParcoursForm()) {
+            <form [formGroup]="parcoursForm" (ngSubmit)="submitParcours()" class="parcours-form mb-4" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Diplôme *</label>
+                  <select formControlName="diplome" class="form-select">
+                    <option value="">Sélectionner…</option>
+                    @for (d of diplomes; track d) {
+                      <option [value]="d">{{ d }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Établissement *</label>
+                  <input type="text" formControlName="etablissement" class="form-control" placeholder="Université / école"/>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Filière</label>
+                  <input type="text" formControlName="filiere" class="form-control" placeholder="Ex: Informatique"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Niveau</label>
+                  <input type="text" formControlName="niveau" class="form-control" placeholder="Ex: L3, M1"/>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Année début</label>
+                  <input type="number" formControlName="annee_debut" class="form-control" placeholder="2019"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Année fin</label>
+                  <input type="number" formControlName="annee_fin" class="form-control" placeholder="2022"/>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Mention</label>
+                  <select formControlName="mention" class="form-select">
+                    @for (m of mentions; track m) {
+                      <option [value]="m">{{ m || '—' }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Pays</label>
+                  <input type="text" formControlName="pays" class="form-control"/>
+                </div>
+              </div>
+              <label class="checkbox-row">
+                <input type="checkbox" formControlName="en_cours"/>
+                Formation en cours
+              </label>
+              @if (parcoursError()) { <p class="form-error">{{ parcoursError() }}</p> }
+              <div class="modal-actions">
+                <button type="button" class="btn btn-outline" (click)="showParcoursForm.set(false)">Annuler</button>
+                <button type="submit" class="btn btn-primary" [disabled]="parcoursBusy() || parcoursForm.invalid">
+                  {{ parcoursBusy() ? 'Envoi…' : (editingParcoursId() ? 'Enregistrer' : 'Ajouter') }}
+                </button>
+              </div>
+            </form>
+          }
+
+          @if (!parcours().length && !showParcoursForm()) {
+            <p class="text-sm text-muted">Aucun diplôme enregistré. Ajoutez votre parcours scolaire et universitaire.</p>
+          }
+
+          <div class="parcours-list">
+            @for (p of parcours(); track p.id) {
+              <div class="parcours-item">
+                <div class="parcours-ico"><mat-icon>school</mat-icon></div>
+                <div class="parcours-body">
+                  <strong>{{ p.diplome }}</strong>
+                  @if (p.en_cours) { <span class="badge badge-gold badge-sm">En cours</span> }
+                  <p class="text-sm">{{ p.etablissement }}@if (p.filiere) { · {{ p.filiere }} }</p>
+                  <p class="text-xs text-muted">
+                    @if (p.niveau) { {{ p.niveau }} · }
+                    @if (p.annee_debut) { {{ p.annee_debut }} }
+                    @if (p.annee_fin) { – {{ p.annee_fin }} }
+                    @else if (p.en_cours) { – … }
+                    @if (p.mention) { · {{ p.mention }} }
+                  </p>
+                </div>
+                <div class="parcours-actions">
+                  <button class="btn-icon" type="button" (click)="openEditParcours(p)"><mat-icon>edit</mat-icon></button>
+                  <button class="btn-icon danger" type="button" (click)="deleteParcours(p.id)"><mat-icon>delete</mat-icon></button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
       <!-- Account info (read-only) -->
       <div class="card mt-4">
         <div class="card-header">
@@ -132,6 +236,10 @@
           <div class="info-row">
             <span class="info-label">Email</span>
             <span class="info-value">{{ user?.email }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Rôle</span>
+            <span class="info-value">{{ roleLabel }}</span>
           </div>
           <div class="info-row">
             <span class="info-label">UUID</span>

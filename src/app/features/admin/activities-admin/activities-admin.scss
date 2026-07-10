@@ -1,0 +1,50 @@
+.thumb {
+  width: 56px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+
+.actions-cell {
+  display: flex;
+  gap: .25rem;
+  justify-content: flex-end;
+}
+
+.btn-icon.danger mat-icon {
+  color: var(--coral, #e05a4e);
+}
+
+.participants-block {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border-light, #e8ecf1);
+  border-radius: 8px;
+}
+
+.participants-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .75rem;
+
+  h4 {
+    margin: 0;
+    font-size: .95rem;
+    font-weight: 600;
+  }
+}
+
+.participant-row {
+  display: flex;
+  align-items: flex-end;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+.form-error {
+  color: var(--coral, #e05a4e);
+  font-size: .875rem;
+  margin: .5rem 0 0;
+}

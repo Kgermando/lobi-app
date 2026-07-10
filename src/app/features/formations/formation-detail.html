@@ -1,0 +1,77 @@
+<div class="page-wrapper">
+
+  <a routerLink="/formations" class="back-link">
+    <mat-icon>arrow_back</mat-icon> Retour aux formations
+  </a>
+
+  @if (loading()) {
+    <div class="detail-skeleton">
+      <div class="skeleton" style="aspect-ratio:16/9;border-radius:12px;margin-bottom:1.5rem"></div>
+      <div class="skeleton" style="height:28px;width:60%;margin-bottom:12px"></div>
+      <div class="skeleton" style="height:80px;margin-bottom:12px"></div>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="empty-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <a routerLink="/formations" class="btn btn-outline btn-sm">Retour</a>
+    </div>
+  }
+
+  @if (formation(); as f) {
+    <div class="detail-layout">
+      <div class="detail-main">
+        <div class="player">
+          @if (youtubeEmbedUrl(f.video_url); as embed) {
+            <iframe
+              [src]="embed"
+              [title]="f.title"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy">
+            </iframe>
+          } @else {
+            <div class="player-fallback">
+              <mat-icon>error_outline</mat-icon>
+              <p>URL YouTube invalide</p>
+              <a [href]="f.video_url" target="_blank" class="btn btn-outline btn-sm">Ouvrir le lien</a>
+            </div>
+          }
+        </div>
+
+        <div class="detail-meta">
+          @if (f.category) {
+            <span class="badge badge-secondary">{{ f.category }}</span>
+          }
+          <h1 class="detail-title">{{ f.title }}</h1>
+          <p class="detail-desc">{{ f.description }}</p>
+        </div>
+      </div>
+
+      @if (f.mentor) {
+        <aside class="mentor-card card">
+          <h3 class="mentor-label">Mentor</h3>
+          <div class="mentor-head">
+            <img [src]="f.mentor.image_url" [alt]="f.mentor.name"/>
+            <div>
+              <p class="mentor-name">{{ f.mentor.name }}</p>
+            </div>
+          </div>
+          <p class="mentor-bio">{{ f.mentor.description }}</p>
+          <button
+            class="btn btn-sm btn-full"
+            [class.btn-primary]="!following()"
+            [class.btn-outline]="following()"
+            [disabled]="followBusy()"
+            (click)="toggleFollow()">
+            @if (following()) { Suivi ✓ }
+            @else { Suivre }
+          </button>
+        </aside>
+      }
+    </div>
+  }
+
+</div>

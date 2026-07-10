@@ -18,7 +18,7 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.svc.getAdminDashboard().subscribe({
-      next: res => { this.data.set(res.data); this.loading.set(false); },
+      next: res => { this.data.set(res.stats); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
   }

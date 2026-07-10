@@ -57,6 +57,7 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--navbar-h) + 12px);
   -webkit-text-size-adjust: 100%;
 }
 

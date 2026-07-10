@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap, catchError, throwError, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { User, AuthResponse, RegisterStep1, RegisterStep2 } from '../models/user.model';
+import { User, AuthResponse, RegisterStep1, RegisterStep2, KYC } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,7 +17,20 @@ export class AuthService {
   isLoggedIn           = computed(() => !!this.currentUser());
   isOnboardingComplete = computed(() => this.onboardingStep() >= 5);
   canAccessApp         = computed(() => this.onboardingStep() >= 3);
-  isAdmin              = computed(() => ['admin', 'superadmin'].includes(this.currentUser()?.role ?? ''));
+  isAdmin = computed(() => ['admin', 'superadmin'].includes(this.currentUser()?.role ?? ''));
+  isMentor = computed(() => this.currentUser()?.role === 'mentor');
+  isPartenaire = computed(() => this.currentUser()?.role === 'partenaire');
+  isApprenant = computed(() => {
+    const r = this.currentUser()?.role ?? '';
+    return r === 'apprenant' || r === 'user' || !r;
+  });
+  roleLabel = computed(() => {
+    const map: Record<string, string> = {
+      apprenant: 'Apprenant', mentor: 'Mentor', admin: 'Admin',
+      partenaire: 'Partenaire', superadmin: 'Admin', user: 'Apprenant',
+    };
+    return map[this.currentUser()?.role ?? ''] ?? 'Apprenant';
+  });
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -63,12 +76,13 @@ export class AuthService {
   }
 
   fetchMe() {
-    return this.http.get<{ data: User }>(`${environment.apiUrl}/auth/me?token=${this.getToken()}`).pipe(
+    return this.http.get<{ data: User; kyc?: KYC; wallet?: unknown }>(`${environment.apiUrl}/auth/me?token=${this.getToken()}`).pipe(
       tap(res => {
-        this.currentUser.set(res.data);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(res.data));
-        if (res.data.onboarding_step !== undefined) {
-          this.saveOnboardingStep(res.data.onboarding_step);
+        const user: User = { ...res.data, kyc: res.kyc ?? res.data?.kyc };
+        this.currentUser.set(user);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+        if (user.onboarding_step !== undefined) {
+          this.saveOnboardingStep(user.onboarding_step);
         }
       })
     );

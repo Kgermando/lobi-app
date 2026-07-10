@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLinkWithHref } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { NavbarComponent } from '../../shared/navbar/navbar';
 
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
-  imports: [RouterOutlet, MatIconModule, RouterLinkWithHref],
+  imports: [RouterOutlet, MatIconModule, RouterLinkWithHref, NavbarComponent],
   template: `
+    <app-navbar [showHamburger]="false"></app-navbar>
     <div class="auth-shell">
       <div class="auth-brand">
         <div class="auth-brand-inner">
-          <a routerLink="/"><img src="/images/logo.png" alt="Lobi" class="auth-brand-logo"/></a> 
+          <a routerLink="/"><img src="/images/logo.png" alt="Lobi" class="auth-brand-logo"/></a>
           <h1 class="auth-brand-name">LOBI</h1>
           <p class="auth-brand-tag">Assurons l'avenir</p>
           <p class="auth-brand-desc">La plateforme d'épargne et d'investissement dédiée à la jeunesse africaine.</p>
@@ -24,10 +26,6 @@ import { MatIconModule } from '@angular/material/icon';
         <div class="auth-brand-pattern"></div>
       </div>
       <div class="auth-content">
-        <div class="auth-mobile-logo">
-          <a routerLink="/"><img src="/images/lobi.png" alt="Lobi"/></a>
-          <!-- <span>LOBI</span> -->
-        </div>
         <router-outlet></router-outlet>
       </div>
     </div>
@@ -35,7 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
   styles: [`
     .auth-shell {
       display: flex;
-      min-height: 100vh;
+      min-height: calc(100vh - var(--navbar-h));
     }
     .auth-brand {
       width: 45%;
@@ -110,9 +108,6 @@ import { MatIconModule } from '@angular/material/icon';
       background: var(--bg);
       overflow-y: auto;
     }
-    .auth-mobile-logo {
-      display: none;
-    }
     @media (max-width: 900px) {
       .auth-brand { display: none; }
       .auth-content {
@@ -120,25 +115,6 @@ import { MatIconModule } from '@angular/material/icon';
         justify-content: flex-start;
         align-items: center;
         padding: 1.5rem 1rem;
-      }
-      .auth-mobile-logo {
-        display: flex;
-        align-items: center;
-        gap: .625rem;
-        margin-bottom: 1.25rem;
-      }
-      .auth-mobile-logo img {
-        height: 64px;
-        width: 64px;
-        border-radius: 14px;
-        box-shadow: 0 4px 12px rgba(0,0,0,.15);
-      }
-      .auth-mobile-logo span {
-        font-family: 'Poppins', sans-serif;
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #1A4D8F;
-        letter-spacing: .08em;
       }
     }
   `]

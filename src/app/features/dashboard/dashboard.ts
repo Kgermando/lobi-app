@@ -2,19 +2,8 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { PocketService } from '../../core/services/pocket.service';
-import { WalletService } from '../../core/services/wallet.service';
+import { PocketService, UserDashboardData } from '../../core/services/pocket.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Transaction } from '../../core/models/transaction.model';
-
-interface DashboardData {
-  wallet: any;
-  total_invested: number;
-  active_pockets: number;
-  recent_transactions: Transaction[];
-  unread_notifications: number;
-  goal_progress: number;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -25,11 +14,10 @@ interface DashboardData {
 })
 export class DashboardComponent implements OnInit {
   pocketSvc  = inject(PocketService);
-  walletSvc  = inject(WalletService);
   auth       = inject(AuthService);
 
   loading = signal(true);
-  data    = signal<DashboardData | null>(null);
+  data    = signal<UserDashboardData | null>(null);
 
   get user() { return this.auth.currentUser(); }
 
@@ -42,8 +30,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.pocketSvc.getDashboard().subscribe({
-      next: (res: any) => {
-        this.data.set(res.data);
+      next: (data) => {
+        this.data.set(data);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)

@@ -25,6 +25,14 @@ export class NavbarComponent {
   profileOpen = signal(false);
   notifications = signal<any[]>([]);
 
+  /** Sections publiques de la landing (accès sans auth) */
+  readonly publicLinks = [
+    { label: 'Programme', fragment: 'programme' },
+    { label: 'Comment ça marche', fragment: 'comment' },
+    { label: 'Réseaux', fragment: 'reseaux' },
+    { label: 'Activités', fragment: 'activites' },
+  ];
+
   get user() { return this.auth.currentUser(); }
   get initials(): string {
     const name = this.user?.fullname ?? this.user?.email ?? '?';
@@ -54,6 +62,8 @@ export class NavbarComponent {
   }
 
   toggleMenu() { this.menuOpen.update(v => !v); this.menuToggled.emit(); }
+
+  closeMenu() { this.menuOpen.set(false); }
 
   markAllRead() {
     this.notif.markAllRead().subscribe(() =>

@@ -40,6 +40,8 @@ export const routes: Routes = [
       { path: 'dashboard',  loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent) },
       { path: 'wallet',     loadComponent: () => import('./features/wallet/wallet').then(m => m.WalletComponent) },
       { path: 'pockets',    loadComponent: () => import('./features/pockets/pockets').then(m => m.PocketsComponent) },
+      { path: 'formations', loadComponent: () => import('./features/formations/formations-list').then(m => m.FormationsListComponent) },
+      { path: 'formations/:id', loadComponent: () => import('./features/formations/formation-detail').then(m => m.FormationDetailComponent) },
       { path: 'community',  loadComponent: () => import('./features/community/community').then(m => m.CommunityComponent) },
       { path: 'profile',    loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
@@ -58,6 +60,8 @@ export const routes: Routes = [
       { path: 'investments',loadComponent: () => import('./features/admin/investments/investments').then(m => m.InvestmentsComponent) },
       { path: 'analytics',  loadComponent: () => import('./features/admin/analytics/analytics').then(m => m.AnalyticsComponent) },
       { path: 'community',  loadComponent: () => import('./features/admin/community-admin/community-admin').then(m => m.CommunityAdminComponent) },
+      { path: 'activities', loadComponent: () => import('./features/admin/activities-admin/activities-admin').then(m => m.ActivitiesAdminComponent) },
+      { path: 'formations', loadComponent: () => import('./features/admin/formations-admin/formations-admin').then(m => m.FormationsAdminComponent) },
     ]
   },
 
