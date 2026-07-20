@@ -62,6 +62,7 @@ export const routes: Routes = [
       { path: 'community',  loadComponent: () => import('./features/admin/community-admin/community-admin').then(m => m.CommunityAdminComponent) },
       { path: 'activities', loadComponent: () => import('./features/admin/activities-admin/activities-admin').then(m => m.ActivitiesAdminComponent) },
       { path: 'formations', loadComponent: () => import('./features/admin/formations-admin/formations-admin').then(m => m.FormationsAdminComponent) },
+      { path: 'testimonials', loadComponent: () => import('./features/admin/testimonials-admin/testimonials-admin').then(m => m.TestimonialsAdminComponent) },
     ]
   },
 

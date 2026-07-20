@@ -31,6 +31,7 @@ export class NavbarComponent {
     { label: 'Comment ça marche', fragment: 'comment' },
     { label: 'Réseaux', fragment: 'reseaux' },
     { label: 'Activités', fragment: 'activites' },
+    { label: 'Témoignages', fragment: 'temoignages' },
   ];
 
   get user() { return this.auth.currentUser(); }

@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
 import { NavbarComponent } from '../../shared/navbar/navbar';
 import { HomeService } from '../../core/services/home.service';
-import { HomeActivity, HomeNetwork, HomeWebinar } from '../../core/models/home.model';
+import { HomeActivity, HomeNetwork, HomeWebinar, Testimonial } from '../../core/models/home.model';
 import { Activity } from '../../core/models/activity.model';
 
 @Component({
@@ -24,26 +24,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   events    = signal<HomeWebinar[]>([]);
   activities = signal<HomeActivity[]>([]);
   cmsActivities = signal<Activity[]>([]);
+  testimonials = signal<Testimonial[]>([]);
   selectedActivity = signal<Activity | null>(null);
-
-  // Static — testimonials & steps don't come from an API
-  testimonials = [
-    {
-      name: 'Amani Bakali', role: 'Développeur, 24 ans', initials: 'AB',
-      text: 'Avec Lobi, j\'ai commencé avec seulement 10 000 CDF. Aujourd\'hui, mon portefeuille a plus que triplé. Simple, transparent, vraiment fait pour nous.',
-      rating: 5, color: 'primary', gain: '+220%'
-    },
-    {
-      name: 'Fatoumata Diaw', role: 'Étudiante en finance, 22 ans', initials: 'FD',
-      text: 'Je cherchais une façon sécurisée d\'investir mes économies. Lobi m\'a offert les outils et la communauté pour le faire intelligemment.',
-      rating: 5, color: 'secondary', gain: '+130%'
-    },
-    {
-      name: 'Kevin Mulamba', role: 'Entrepreneur, 28 ans', initials: 'KM',
-      text: 'Le Forum Lobi a changé ma vision de l\'investissement. Un réseau incroyable s\'est formé autour de cette plateforme.',
-      rating: 5, color: 'green', gain: '+340%'
-    }
-  ];
 
   steps = [
     { step: '01', title: 'Rejoignez le programme', description: 'Créez votre compte adhérent, complétez votre profil étudiant et activez votre épargne stratégique.', icon: 'person_add', color: 'primary' },
@@ -88,14 +70,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     forkJoin({
-      networks:   this.svc.getNetworks(),
-      events:     this.svc.getEvents(),
-      activities: this.svc.getActivities(),
+      networks:      this.svc.getNetworks(),
+      events:        this.svc.getEvents(),
+      activities:    this.svc.getActivities(),
+      testimonials:  this.svc.getTestimonials(),
     }).subscribe({
       next: (res) => {
         this.networks.set(res.networks.data ?? []);
         this.events.set(res.events.data ?? []);
         this.activities.set(res.activities.data ?? []);
+        this.testimonials.set(res.testimonials.data ?? []);
         this.loading.set(false);
         setTimeout(() => {
           this.initScrollAnimations();
@@ -193,6 +177,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   closeCmsActivity() {
     this.selectedActivity.set(null);
+  }
+
+  starArray(rating: number): number[] {
+    const n = Math.min(5, Math.max(1, rating || 5));
+    return Array.from({ length: n }, (_, i) => i + 1);
   }
 
   getProgressPercent(network: HomeNetwork): number {

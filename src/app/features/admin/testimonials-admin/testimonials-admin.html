@@ -1,0 +1,131 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Témoignages</h1>
+      <p class="page-subtitle text-muted">Avis affichés sur la page d'accueil</p>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="openCreate()">
+      <mat-icon>add</mat-icon> Nouveau témoignage
+    </button>
+  </div>
+
+  @if (showForm()) {
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3 class="card-title">{{ editingId() ? 'Modifier' : 'Créer' }} un témoignage</h3>
+      <button class="btn-icon" (click)="cancel()"><mat-icon>close</mat-icon></button>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nom *</label>
+            <input type="text" formControlName="name" class="form-control" placeholder="Amani Bakali"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rôle / détail *</label>
+            <input type="text" formControlName="role" class="form-control" placeholder="Développeur, 24 ans"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Initiales</label>
+            <input type="text" formControlName="initials" class="form-control" placeholder="AB (auto si vide)" maxlength="3"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gain affiché</label>
+            <input type="text" formControlName="gain" class="form-control" placeholder="+220%"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Témoignage *</label>
+          <textarea formControlName="text" class="form-control" rows="3" placeholder="Citation..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Note (1–5)</label>
+            <input type="number" formControlName="rating" class="form-control" min="1" max="5"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Couleur avatar</label>
+            <select formControlName="color" class="form-select">
+              @for (c of colors; track c.value) {
+                <option [value]="c.value">{{ c.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ordre</label>
+            <input type="number" formControlName="sort_order" class="form-control"/>
+          </div>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" formControlName="active"/>
+          Actif (visible sur la landing)
+        </label>
+        @if (errorMsg()) { <p class="form-error">{{ errorMsg() }}</p> }
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" (click)="cancel()">Annuler</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving() || form.invalid">
+            {{ saving() ? 'Enregistrement…' : (editingId() ? 'Enregistrer' : 'Créer') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  @if (loading()) {
+    <div class="card"><div class="card-body text-muted">Chargement…</div></div>
+  } @else {
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Auteur</th>
+              <th>Citation</th>
+              <th>Gain</th>
+              <th>Note</th>
+              <th>Statut</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of items(); track t.id) {
+            <tr>
+              <td>
+                <div class="author-cell">
+                  <span class="av" [attr.data-color]="t.color">{{ t.initials }}</span>
+                  <div>
+                    <p class="font-medium text-sm">{{ t.name }}</p>
+                    <p class="text-xs text-muted">{{ t.role }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="text-sm quote-cell">{{ t.text }}</td>
+              <td class="text-sm">{{ t.gain || '—' }}</td>
+              <td class="text-sm">{{ t.rating }}/5</td>
+              <td>
+                <span class="badge" [class]="t.active ? 'badge-green' : 'badge-coral'">
+                  {{ t.active ? 'Actif' : 'Masqué' }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button class="btn-icon" (click)="openEdit(t)" title="Modifier"><mat-icon>edit</mat-icon></button>
+                <button class="btn-icon danger" (click)="delete(t.id)" title="Supprimer"><mat-icon>delete</mat-icon></button>
+              </td>
+            </tr>
+            }
+            @if (!items().length) {
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">Aucun témoignage</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

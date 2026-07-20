@@ -156,6 +156,22 @@ export class UserService {
     return this.http.delete<any>(this.url(`/parcours/${id}`));
   }
 
+  getTestimonialsAdmin() {
+    return this.http.get<{ data: any[] }>(this.url('/testimonials/admin/all'));
+  }
+
+  createTestimonial(data: any) {
+    return this.http.post<any>(this.url('/testimonials'), data);
+  }
+
+  updateTestimonial(id: string, data: any) {
+    return this.http.put<any>(this.url(`/testimonials/${id}`), data);
+  }
+
+  deleteTestimonial(id: string) {
+    return this.http.delete<any>(this.url(`/testimonials/${id}`));
+  }
+
   updateProfile(data: any) {
     return this.http.put<any>(this.url('/users/me/profile'), data);
   }

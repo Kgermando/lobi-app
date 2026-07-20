@@ -44,6 +44,7 @@ export class SidebarComponent {
     { label: 'Communauté',       icon: 'school',              route: '/admin/community' },
     { label: 'Activités',        icon: 'event',               route: '/admin/activities' },
     { label: 'Formations',       icon: 'play_circle',         route: '/admin/formations' },
+    { label: 'Témoignages',      icon: 'format_quote',        route: '/admin/testimonials' },
   ];
 
   get navItems() {

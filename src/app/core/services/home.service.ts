@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { HomeActivity, HomeNetwork, HomeWebinar } from '../models/home.model';
+import { HomeActivity, HomeNetwork, HomeWebinar, Testimonial } from '../models/home.model';
 import { Activity } from '../models/activity.model';
 
 @Injectable({ providedIn: 'root' })
@@ -28,5 +28,9 @@ export class HomeService {
 
   getCmsActivity(id: string) {
     return this.http.get<{ data: Activity }>(`${this.api}/activities/${id}`);
+  }
+
+  getTestimonials() {
+    return this.http.get<{ data: Testimonial[] }>(`${this.api}/testimonials`);
   }
 }

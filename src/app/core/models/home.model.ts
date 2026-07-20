@@ -48,3 +48,16 @@ export interface HomeWebinar {
   max_spots: number;
   available_spots: number;
 }
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  initials: string;
+  text: string;
+  rating: number;
+  color: string;
+  gain: string;
+  active: boolean;
+  sort_order: number;
+}

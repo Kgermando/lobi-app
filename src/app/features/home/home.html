@@ -4,128 +4,64 @@
      HERO
 ══════════════════════════════════════════════════════ -->
 <section class="hero">
-  <div class="hero-mesh"></div>
-  <div class="hero-glow g1"></div>
-  <div class="hero-glow g2"></div>
-  <div class="hero-glow g3"></div>
+  <div class="hero-banner reveal">
+    <img
+      src="/images/home1.png"
+      alt="LOBI — parcours de l'étudiant au professionnel : carrière, entrepreneuriat, impact, réussite."
+      class="hero-banner-img"
+      width="1600"
+      height="900"
+    />
+    <div class="hero-overlay" aria-hidden="true"></div>
 
-  <div class="container">
-    <div class="hero-inner">
-
-      <!-- ── Copy ─────────────────────────────────── -->
-      <div class="hero-copy reveal">
-
-        <!-- <div class="hero-pill">
-          <span class="hero-pill-dot"></span>
-          <span>2 500+ investisseurs actifs en RDC</span>
-        </div> -->
-
-        <h1 class="hero-title">
-          De l'étudiant au<br>
-          <span class="hero-gradient">créateur de richesse</span>
-        </h1>
-
-        <p class="hero-desc">
-          Programme panafricain né en RDC — <strong>Assurons l'avenir</strong>.
-          Épargne stratégique, fonds de garantie, formations et mentorat
-          pour lancer votre entreprise. Commencez dès <strong>5 000 CDF</strong>.
-        </p>
-
-        <div class="hero-actions">
-          <a routerLink="/auth/register" class="btn-cta">
-            Rejoindre le programme
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
-          <a href="#programme" class="btn-ghost">
-            <mat-icon>info</mat-icon>
-            Découvrir LOBI
-          </a>
-        </div>
-
-        <div class="hero-proof">
-          <div class="proof-avs">
-            @for (t of testimonials; track t.name) {
-              <div class="pav" [class]="'pav-' + t.color">{{ t.initials }}</div>
-            }
-            <div class="pav pav-more">+2k</div>
-          </div>
-          <div class="proof-text">
-            <span class="proof-stars">★★★★★</span>
-            <span>Rejoints par <strong>2 500+</strong> investisseurs</span>
+    <div class="hero-content">
+      <div class="container hero-content-inner">
+        <div class="hero-top reveal">
+          <div class="hero-text-panel">
+            <p class="hero-slogan">
+              <span class="hero-slogan-dot"></span>
+              Néant hier, géant demain
+            </p>
+            <h1 class="hero-title">LOBI, VOTRE TREMPLIN</h1>
+            <div class="hero-title-rule" aria-hidden="true"></div>
+            <p class="hero-desc">
+              Nous avons la lourde responsabilité de
+              <span class="hero-accent">créer</span>
+              ce que la vie ne nous a pas donné naturellement&nbsp;!
+            </p>
           </div>
         </div>
-      </div>
 
-      <!-- ── Dashboard preview ─────────────────────── -->
-      <div class="hero-visual reveal" style="transition-delay:.1s">
-
-        <!-- Main card -->
-        <div class="hv-card hv-main">
-          <div class="hvc-topbar">
-            <div class="hvc-dots"><span></span><span></span><span></span></div>
-            <span class="hvc-tab active">Dashboard</span>
-            <span class="hvc-tab">Reseaux</span>
-            <span class="hvc-tab">Wallet</span>
+        <div class="hero-bottom reveal" style="transition-delay:.15s">
+          <div class="hero-actions">
+            <a routerLink="/auth/register" class="btn-cta btn-hero">
+              Rejoindre le programme
+              <mat-icon>arrow_forward</mat-icon>
+            </a>
+            <a href="#programme" class="btn-ghost btn-hero">
+              <mat-icon>info</mat-icon>
+              Découvrir LOBI
+            </a>
           </div>
 
-          <div class="hvc-stats">
-            <div class="hvc-stat">
-              <p class="hvcs-label">Portefeuille</p>
-              <p class="hvcs-value">12 500 000 CDF</p>
-              <p class="hvcs-growth">
-                <mat-icon>arrow_upward</mat-icon>+22% ce mois
-              </p>
+          <div class="hero-proof">
+            <div class="proof-avs">
+              @for (t of testimonials(); track t.id) {
+                <div class="pav" [class]="'pav-' + t.color">{{ t.initials }}</div>
+              }
+              <div class="pav pav-more">+2k</div>
             </div>
-            <div class="hvc-stat">
-              <p class="hvcs-label">Rendements</p>
-              <p class="hvcs-value text-green">+2 805 000 CDF</p>
-              <p class="hvcs-growth text-green">
-                <mat-icon>trending_up</mat-icon>3 reseaux
-              </p>
+            <div class="proof-text">
+              <span class="proof-stars">★★★★★</span>
+              <span>Rejoints par <strong>1 300+</strong> investisseurs</span>
             </div>
           </div>
-
-          <div class="hvc-chart">
-            @for (h of [35, 48, 42, 68, 56, 84, 100]; track h; let i = $index) {
-              <div class="hvc-bar" [style.height.%]="h" [class.hvc-bar-active]="h === 100"></div>
-            }
-          </div>
-          <div class="hvc-months">
-            @for (m of ['J','F','M','A','M','J','J']; track m) {
-              <span>{{ m }}</span>
-            }
-          </div>
         </div>
-
-        <!-- Floating notification -->
-        <div class="hv-card hv-notif">
-          <mat-icon class="hv-notif-ic">check_circle</mat-icon>
-          <div>
-            <p class="hv-notif-t">Rendement recu !</p>
-            <p class="hv-notif-s">+2 500 000 CDF - Reseau Sikama</p>
-          </div>
-        </div>
-
-        <!-- Floating pill: members -->
-        <div class="hv-card hv-pill">
-          <mat-icon>groups</mat-icon>
-          <div>
-            <p class="hvp-val">2 500+</p>
-            <p class="hvp-lab">membres</p>
-          </div>
-        </div>
-
-        <!-- Floating ROI badge -->
-        <div class="hv-card hv-roi">
-          <p class="hvr-pct">+18%</p>
-          <p class="hvr-lab">/ mois</p>
-        </div>
-
       </div>
     </div>
   </div>
 
-  <div class="hero-wave">
+  <div class="hero-wave"> 
     <svg viewBox="0 0 1440 72" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M0,36 C360,72 1080,0 1440,36 L1440,72 L0,72 Z" fill="var(--bg)"/>
     </svg>
@@ -322,7 +258,7 @@
         <h3 class="bc-title">Communauté & mentorat</h3>
         <p class="bc-desc">Forums, webinars exclusifs et mentors pour accélérer votre réussite entrepreneuriale.</p>
         <div class="bc-avatars">
-          @for (t of testimonials; track t.name) {
+          @for (t of testimonials(); track t.id) {
             <div class="bca-av" [class]="'pav-' + t.color">{{ t.initials }}</div>
           }
           <div class="bca-av bca-more">+2k</div>
@@ -683,7 +619,7 @@
 <!-- ══════════════════════════════════════════════════════
      TESTIMONIALS
 ══════════════════════════════════════════════════════ -->
-<section class="testi-section">
+<section id="temoignages" class="testi-section">
   <div class="container">
     <div class="section-header reveal">
       <span class="stag">Temoignages</span>
@@ -691,26 +627,42 @@
       <p class="ssub">Des vraies personnes, de vrais resultats, au Congo.</p>
     </div>
 
-    <div class="testi-grid">
-      @for (t of testimonials; track t.name; let i = $index) {
-        <div class="tcard reveal" [style.transition-delay]="(i * 0.1) + 's'">
-          <div class="tcard-top">
-            <div class="tcard-stars">
-              @for (s of [1,2,3,4,5]; track s) { <mat-icon>star</mat-icon> }
-            </div>
-            <div class="tcard-gain" [class]="'tcg-' + t.color">{{ t.gain }}</div>
+    @if (loading() && !testimonials().length) {
+      <div class="testi-grid">
+        @for (i of [1,2,3]; track i) {
+          <div class="tcard skeleton-card">
+            <div class="skeleton" style="height:20px;width:40%;margin-bottom:12px;border-radius:4px"></div>
+            <div class="skeleton" style="height:80px;margin-bottom:12px;border-radius:4px"></div>
+            <div class="skeleton" style="height:40px;width:60%;border-radius:4px"></div>
           </div>
-          <p class="tcard-text">"{{ t.text }}"</p>
-          <div class="tcard-author">
-            <div class="tcard-av" [class]="'tcav-' + t.color">{{ t.initials }}</div>
-            <div>
-              <p class="tcard-name">{{ t.name }}</p>
-              <p class="tcard-role">{{ t.role }}</p>
+        }
+      </div>
+    }
+
+    @if (testimonials().length) {
+      <div class="testi-grid">
+        @for (t of testimonials(); track t.id; let i = $index) {
+          <div class="tcard reveal" [style.transition-delay]="(i * 0.1) + 's'">
+            <div class="tcard-top">
+              <div class="tcard-stars">
+                @for (s of starArray(t.rating); track s) { <mat-icon>star</mat-icon> }
+              </div>
+              @if (t.gain) {
+                <div class="tcard-gain" [class]="'tcg-' + t.color">{{ t.gain }}</div>
+              }
+            </div>
+            <p class="tcard-text">"{{ t.text }}"</p>
+            <div class="tcard-author">
+              <div class="tcard-av" [class]="'tcav-' + t.color">{{ t.initials }}</div>
+              <div>
+                <p class="tcard-name">{{ t.name }}</p>
+                <p class="tcard-role">{{ t.role }}</p>
+              </div>
             </div>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
   </div>
 </section>
 
